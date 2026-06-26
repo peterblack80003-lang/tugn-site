@@ -1,0 +1,40 @@
+export const siteSettings = {
+  name: 'siteSettings',
+  title: 'Site Settings',
+  type: 'document',
+  __experimental_actions: ['update', 'publish'],
+  fields: [
+    {
+      name: 'featured_episode_id',
+      type: 'string',
+      title: 'Featured YouTube Video ID',
+    },
+    { name: 'featured_episode_title', type: 'string', title: 'Featured Episode Title' },
+    {
+      name: 'featured_episode_description',
+      type: 'text',
+      title: 'Featured Episode Description',
+    },
+    { name: 'seasonal_banner_active', type: 'boolean', title: 'Seasonal Banner Active' },
+    { name: 'seasonal_banner_text', type: 'string', title: 'Seasonal Banner Text' },
+    {
+      name: 'seasonal_banner_cta_text',
+      type: 'string',
+      title: 'Seasonal Banner CTA Text',
+    },
+    { name: 'seasonal_banner_cta_url', type: 'url', title: 'Seasonal Banner CTA URL' },
+    { name: 'lead_magnet_active', type: 'boolean', title: 'Lead Magnet Active' },
+    { name: 'lead_magnet_title', type: 'string', title: 'Lead Magnet Title' },
+    { name: 'lead_magnet_description', type: 'text', title: 'Lead Magnet Description' },
+    { name: 'lead_magnet_cta_text', type: 'string', title: 'Lead Magnet CTA Text' },
+    { name: 'lead_magnet_cta_url', type: 'url', title: 'Lead Magnet CTA URL' },
+    {
+      name: 'start_here_series',
+      type: 'string',
+      title: 'Start Here Series Lane',
+      options: { list: ['A', 'B', 'C'] },
+    },
+    { name: 'start_here_headline', type: 'string', title: 'Start Here Headline' },
+    { name: 'start_here_subtext', type: 'text', title: 'Start Here Subtext' },
+  ],
+}
