@@ -151,7 +151,6 @@ img {
   width: 180px;
   height: 180px;
   margin: 0 auto;
-  filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.6));
 }
 
 @media (min-width: 768px) {
