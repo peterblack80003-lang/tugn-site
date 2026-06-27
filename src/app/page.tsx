@@ -217,13 +217,16 @@ export default async function HomePage() {
           </h2>
 
           <div className="series-grid">
-            {seriesCards.map((card) => (
+            {seriesCards.map((card, i) => {
+              const accentColor = i === 2 ? '#8B5E3C' : card.accentColor
+              const borderColor = i === 2 ? '#8B5E3C' : card.borderColor
+              return (
               <div
                 key={card.lane}
                 style={{
                   background: '#1a2535',
                   border: '1px solid rgba(74,140,42,0.2)',
-                  borderTop: `3px solid ${card.borderColor}`,
+                  borderTop: `3px solid ${borderColor}`,
                   borderRadius: '8px',
                   padding: '2rem',
                   display: 'flex',
@@ -234,7 +237,7 @@ export default async function HomePage() {
               >
                 <p
                   style={{
-                    color: card.accentColor,
+                    color: accentColor,
                     fontSize: '10px',
                     letterSpacing: '3px',
                     textTransform: 'uppercase',
@@ -270,7 +273,7 @@ export default async function HomePage() {
                 <Link
                   href={card.href}
                   style={{
-                    color: card.accentColor,
+                    color: accentColor,
                     fontSize: '0.9rem',
                     fontWeight: 600,
                     fontFamily: 'var(--font-inter, Inter, sans-serif)',
@@ -281,7 +284,8 @@ export default async function HomePage() {
                   {card.cta}
                 </Link>
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>
@@ -351,6 +355,7 @@ export default async function HomePage() {
 
             {/* Placeholder artwork */}
             <div
+              className="character-placeholder"
               style={{
                 width: '200px',
                 height: '200px',

@@ -136,6 +136,11 @@ img {
   color: #fff;
 }
 
+/* ── Merch section ── */
+@media (max-width: 767px) {
+  .character-placeholder { display: none; }
+}
+
 /* ── Hero section ── */
 .hero-section {
   min-height: 75vh;
