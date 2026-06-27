@@ -12,7 +12,10 @@ const desktopLinks = [
   { href: '/shop', label: 'Shop', external: false },
 ]
 
-const overlayGroups = [
+const overlayGroups: Array<{
+  label: string
+  links: Array<{ href: string; label: string; external?: boolean }>
+}> = [
   {
     label: 'Learn',
     links: [

@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { getSiteSettings } from '@/lib/queries'
+import { getChannelVideos } from '@/lib/youtube'
 import StatsBar from '@/components/StatsBar'
+import VideoCard from '@/components/VideoCard'
 
 const seriesCards = [
   {
@@ -40,8 +41,7 @@ const seriesCards = [
 ]
 
 export default async function HomePage() {
-  const settings = await getSiteSettings().catch(() => null)
-  const featuredId = settings?.featured_episode_id
+  const latestVideos = await getChannelVideos('UCg30BKGYJPyTzeVJmBmHnLg', 3)
 
   return (
     <>
@@ -502,56 +502,70 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── FEATURED VIDEO (if set in Sanity) ── */}
-      {featuredId && (
-        <section
-          style={{
-            background: '#111827',
-            padding: '5rem 0',
-            borderTop: '1px solid rgba(255,255,255,0.08)',
-          }}
-        >
-          <div className="container" style={{ maxWidth: '860px' }}>
-            <h2
-              style={{
-                textAlign: 'center',
-                marginBottom: '2rem',
-                fontSize: '1.6rem',
-                color: '#E8DFC8',
-                fontFamily: 'var(--font-roboto-slab, serif)',
-              }}
-            >
-              {settings?.featured_episode_title || 'Latest Episode'}
-            </h2>
-            <div
-              style={{
-                position: 'relative',
-                paddingBottom: '56.25%',
-                height: 0,
-                borderRadius: '8px',
-                overflow: 'hidden',
-                background: '#000',
-              }}
-            >
-              <iframe
-                src={`https://www.youtube.com/embed/${featuredId}`}
-                title={settings?.featured_episode_title || 'Latest Episode'}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                loading="lazy"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  border: 0,
-                }}
-              />
+      {/* ── LATEST FROM THE CHANNEL ── */}
+      <section
+        style={{
+          background: '#111827',
+          padding: '5rem 0',
+          borderTop: '1px solid rgba(255,255,255,0.08)',
+        }}
+      >
+        <div className="container">
+          <p
+            style={{
+              color: '#4A8C2A',
+              fontSize: '11px',
+              letterSpacing: '3px',
+              textTransform: 'uppercase',
+              fontFamily: 'var(--font-inter, Inter, sans-serif)',
+              textAlign: 'center',
+              marginBottom: '0.75rem',
+              fontWeight: 600,
+            }}
+          >
+            Latest from the Channel
+          </p>
+          <h2
+            style={{
+              textAlign: 'center',
+              fontSize: 'clamp(1.4rem, 3vw, 1.9rem)',
+              color: '#E8DFC8',
+              marginBottom: '2.5rem',
+              fontFamily: 'var(--font-roboto-slab, serif)',
+            }}
+          >
+            What&apos;s New
+          </h2>
+          {latestVideos.length > 0 ? (
+            <div className="series-grid">
+              {latestVideos.map((video) => (
+                <VideoCard key={video.videoId} {...video} />
+              ))}
             </div>
-          </div>
-        </section>
-      )}
+          ) : (
+            <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+              <p
+                style={{
+                  color: 'rgba(232,223,200,0.45)',
+                  fontSize: '0.95rem',
+                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                  marginBottom: '1.5rem',
+                }}
+              >
+                New videos dropping soon.
+              </p>
+              <a
+                href="https://youtube.com/@theurbangardeningneighbor"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-green"
+              >
+                Subscribe on YouTube
+              </a>
+            </div>
+          )}
+        </div>
+      </section>
     </>
   )
 }

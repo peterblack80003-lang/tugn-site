@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getPlaylistVideos } from '@/lib/youtube'
+import VideoCard from '@/components/VideoCard'
 
 export const metadata: Metadata = {
   title: 'Zone 5b Denver Gardening Guide — What Actually Works on the Front Range',
@@ -31,7 +33,12 @@ const growsWell = {
   skip: ['Okra (too short a season)', 'Sweet potatoes (marginal)', 'Artichokes (perennial but iffy)'],
 }
 
-export default function Zone5DenverGardeningGuide() {
+export default async function Zone5DenverGardeningGuide() {
+  const [beginnersVideos, startGardenVideos] = await Promise.all([
+    getPlaylistVideos('PLNx2xiJoL9rdGgHwdvbxV2KNl4-rGePEv', 2),
+    getPlaylistVideos('PLNx2xiJoL9reoiNxuc_Eypa5lq35hF3Zi', 2),
+  ])
+  const zone5Videos = [...beginnersVideos, ...startGardenVideos]
   return (
     <>
       {/* ── HERO ── */}
@@ -474,9 +481,15 @@ export default function Zone5DenverGardeningGuide() {
         </div>
       </section>
 
-      {/* ── VIDEO RESOURCES ── */}
-      <section style={{ background: '#111827', padding: '4rem 0' }}>
-        <div className="container" style={{ maxWidth: '760px' }}>
+      {/* ── VIDEO LIBRARY ── */}
+      <section
+        style={{
+          background: '#111827',
+          borderTop: '1px solid rgba(255,255,255,0.06)',
+          padding: '4rem 0',
+        }}
+      >
+        <div className="container" style={{ maxWidth: '960px' }}>
           <p
             style={{
               color: '#4A8C2A',
@@ -498,29 +511,37 @@ export default function Zone5DenverGardeningGuide() {
               fontFamily: 'var(--font-roboto-slab, serif)',
             }}
           >
-            Watch: Zone 5 Gardening in Practice
+            Watch: Getting Started in Zone 5b Denver
           </h2>
-          <div
-            style={{
-              background: '#1a2535',
-              border: '1px dashed rgba(232,223,200,0.15)',
-              borderRadius: '8px',
-              padding: '3rem 2rem',
-              textAlign: 'center',
-            }}
-          >
-            <p
+          {zone5Videos.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {zone5Videos.map((video) => (
+                <VideoCard key={video.videoId} {...video} />
+              ))}
+            </div>
+          ) : (
+            <div
               style={{
-                color: 'rgba(232,223,200,0.45)',
-                fontSize: '0.92rem',
-                fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                lineHeight: 1.7,
-                margin: 0,
+                background: '#1a2535',
+                border: '1px dashed rgba(232,223,200,0.15)',
+                borderRadius: '8px',
+                padding: '3rem 2rem',
+                textAlign: 'center',
               }}
             >
-              Videos on Zone 5 timing, tomato selection, and raised bed setup — coming soon.
-            </p>
-          </div>
+              <p
+                style={{
+                  color: 'rgba(232,223,200,0.45)',
+                  fontSize: '0.92rem',
+                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                  lineHeight: 1.7,
+                  margin: 0,
+                }}
+              >
+                Zone 5 getting-started videos — coming soon.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

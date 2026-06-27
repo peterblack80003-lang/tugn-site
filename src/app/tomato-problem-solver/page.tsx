@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getPlaylistVideos } from '@/lib/youtube'
+import VideoCard from '@/components/VideoCard'
 
 export const metadata: Metadata = {
   title: 'Tomato Problem Solver — Diagnose What\'s Wrong With Your Tomato Plants',
@@ -82,7 +84,12 @@ const problems = [
 
 const accentColors = ['#D4601A', '#8B5E3C']
 
-export default function TomatoProblemSolver() {
+export default async function TomatoProblemSolver() {
+  const [masterclassVideos, seedToHarvestVideos] = await Promise.all([
+    getPlaylistVideos('PLNx2xiJoL9rfH_jAUrGYgtkQhVBIOFGxw', 2),
+    getPlaylistVideos('PLNx2xiJoL9rc77KZkQm1i0VCb0YQM3yK0', 2),
+  ])
+  const tomatoVideos = [...masterclassVideos, ...seedToHarvestVideos]
   return (
     <>
       {/* ── HERO ── */}
@@ -529,9 +536,15 @@ export default function TomatoProblemSolver() {
         </div>
       </section>
 
-      {/* ── VIDEO RESOURCES ── */}
-      <section style={{ background: '#1a2535', padding: '4rem 0' }}>
-        <div className="container" style={{ maxWidth: '760px' }}>
+      {/* ── VIDEO LIBRARY ── */}
+      <section
+        style={{
+          background: '#1a2535',
+          borderTop: '1px solid rgba(232,223,200,0.06)',
+          padding: '4rem 0',
+        }}
+      >
+        <div className="container" style={{ maxWidth: '960px' }}>
           <p
             style={{
               color: '#4A8C2A',
@@ -553,29 +566,37 @@ export default function TomatoProblemSolver() {
               fontFamily: 'var(--font-roboto-slab, serif)',
             }}
           >
-            Video Resources
+            Watch: Tomato Masterclass Episodes
           </h2>
-          <div
-            style={{
-              background: '#111827',
-              border: '1px dashed rgba(232,223,200,0.15)',
-              borderRadius: '8px',
-              padding: '3rem 2rem',
-              textAlign: 'center',
-            }}
-          >
-            <p
+          {tomatoVideos.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {tomatoVideos.map((video) => (
+                <VideoCard key={video.videoId} {...video} />
+              ))}
+            </div>
+          ) : (
+            <div
               style={{
-                color: 'rgba(232,223,200,0.45)',
-                fontSize: '0.92rem',
-                fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                lineHeight: 1.7,
-                margin: 0,
+                background: '#111827',
+                border: '1px dashed rgba(232,223,200,0.15)',
+                borderRadius: '8px',
+                padding: '3rem 2rem',
+                textAlign: 'center',
               }}
             >
-              Tomato troubleshooting videos — coming soon.
-            </p>
-          </div>
+              <p
+                style={{
+                  color: 'rgba(232,223,200,0.45)',
+                  fontSize: '0.92rem',
+                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                  lineHeight: 1.7,
+                  margin: 0,
+                }}
+              >
+                Tomato masterclass videos — coming soon.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
