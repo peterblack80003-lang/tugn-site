@@ -58,7 +58,7 @@ export default async function HomePage() {
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'rgba(17,24,39,0.82)',
+            background: 'rgba(17,24,39,0.68)',
           }}
           aria-hidden="true"
         />
