@@ -4,6 +4,7 @@ const navLinks = [
   { href: '/start-here', label: 'Start Here' },
   { href: '/tomato-masterclass', label: 'Masterclass' },
   { href: '/gardening-guides', label: 'Guides' },
+  { href: '/zone-5-denver-gardening-guide', label: 'Zone 5 Guide' },
   { href: '/videos', label: 'Videos' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
