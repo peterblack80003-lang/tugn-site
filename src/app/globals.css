@@ -2,32 +2,37 @@
 
 @theme {
   --color-navy: #1A2535;
-  --color-navy-dark: #111b29;
+  --color-navy-dark: #111827;
   --color-navy-light: #1e2d42;
   --color-green: #4A8C2A;
   --color-green-light: #5aa332;
   --color-cream: #E8DFC8;
-  --color-cream-dark: #d8cfb8;
   --color-orange: #D4601A;
-  --color-orange-light: #e06e24;
-  --color-footer-bg: #0f1a0f;
+  --color-wood: #8B5E3C;
   --font-heading: var(--font-roboto-slab);
   --font-body: var(--font-inter);
 }
 
 :root {
-  --bg: #1A2535;
-  --surface: #1e2d42;
-  --surface2: #243348;
-  --border: rgba(255, 255, 255, 0.1);
+  --bg: #111827;
+  --surface: #1a2535;
+  --surface2: #1e2d42;
+  --border: rgba(255, 255, 255, 0.08);
   --text: #E8DFC8;
-  --text-muted: rgba(232, 223, 200, 0.65);
+  --text-muted: rgba(232, 223, 200, 0.6);
   --green: #4A8C2A;
   --orange: #D4601A;
+  --wood: #8B5E3C;
 }
 
 html {
   scroll-behavior: smooth;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
@@ -36,16 +41,13 @@ body {
   font-family: var(--font-inter, Inter, sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-roboto-slab, 'Roboto Slab', serif);
   font-weight: 700;
+  line-height: 1.15;
 }
 
 a {
@@ -56,8 +58,10 @@ a {
 img {
   max-width: 100%;
   height: auto;
+  display: block;
 }
 
+/* ── Layout ── */
 .container {
   width: 100%;
   max-width: 1200px;
@@ -65,55 +69,205 @@ img {
   padding: 0 1.5rem;
 }
 
+/* ── Buttons ── */
 .btn-green {
   display: inline-block;
-  background: var(--green);
+  background: #4A8C2A;
   color: #fff;
-  padding: 0.75rem 1.75rem;
+  padding: 0.8rem 2rem;
   border-radius: 4px;
   font-weight: 600;
+  font-size: 0.9rem;
   font-family: var(--font-inter, Inter, sans-serif);
   transition: background 0.2s;
+  border: none;
+  cursor: pointer;
 }
-
-.btn-green:hover {
-  background: #5aa332;
-}
+.btn-green:hover { background: #5aa332; }
 
 .btn-orange {
   display: inline-block;
-  background: var(--orange);
+  background: #D4601A;
   color: #fff;
-  padding: 0.75rem 1.75rem;
+  padding: 0.8rem 2rem;
   border-radius: 4px;
   font-weight: 600;
+  font-size: 0.9rem;
   font-family: var(--font-inter, Inter, sans-serif);
   transition: background 0.2s;
+  border: none;
+  cursor: pointer;
 }
-
-.btn-orange:hover {
-  background: #e06e24;
-}
+.btn-orange:hover { background: #e06e24; }
 
 .btn-outline {
   display: inline-block;
-  border: 2px solid var(--green);
-  color: var(--green);
-  padding: 0.7rem 1.75rem;
+  border: 1.5px solid rgba(232, 223, 200, 0.4);
+  color: #E8DFC8;
+  padding: 0.8rem 2rem;
   border-radius: 4px;
   font-weight: 600;
+  font-size: 0.9rem;
   font-family: var(--font-inter, Inter, sans-serif);
   transition: all 0.2s;
+  background: transparent;
+  cursor: pointer;
+}
+.btn-outline:hover {
+  border-color: #E8DFC8;
+  background: rgba(232, 223, 200, 0.08);
 }
 
-.btn-outline:hover {
-  background: var(--green);
+.btn-outline-green {
+  display: inline-block;
+  border: 1.5px solid #4A8C2A;
+  color: #4A8C2A;
+  padding: 0.8rem 2rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: var(--font-inter, Inter, sans-serif);
+  transition: all 0.2s;
+  background: transparent;
+  cursor: pointer;
+}
+.btn-outline-green:hover {
+  background: #4A8C2A;
   color: #fff;
 }
 
+/* ── Hero logo ── */
+.hero-logo-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto;
+  filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.6));
+}
+
+@media (min-width: 768px) {
+  .hero-logo-wrapper { width: 200px; height: 200px; }
+}
+
+@media (min-width: 1024px) {
+  .hero-logo-wrapper { width: 260px; height: 260px; }
+}
+
+/* ── Stats bar ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .stats-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.stat-item {
+  position: relative;
+  padding: 1.75rem 1rem;
+  text-align: center;
+}
+
+.stat-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.stat-item:first-child::before { display: none; }
+
+/* Mobile 2x2: hide divider on item 3 (first in second row) */
+@media (max-width: 639px) {
+  .stat-item:nth-child(3)::before { display: none; }
+  .stat-item:nth-child(3),
+  .stat-item:nth-child(4) {
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+  }
+}
+
+/* ── Series cards ── */
+.series-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .series-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .series-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ── Merch section ── */
+.merch-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .merch-layout {
+    flex-direction: row;
+    align-items: center;
+  }
+  .merch-layout > *:first-child { flex: 1; }
+}
+
+/* ── Footer grid ── */
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1.2fr 1fr 1.4fr;
+    gap: 3rem;
+  }
+}
+
+.footer-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .footer-bottom {
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+  }
+}
+
+/* ── Gear / product cards ── */
+.product-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Lane badges ── */
 .lane-badge {
   display: inline-block;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -123,4 +277,4 @@ img {
 
 .lane-badge-a { background: rgba(74, 140, 42, 0.2); color: #5aa332; }
 .lane-badge-b { background: rgba(212, 96, 26, 0.2); color: #e06e24; }
-.lane-badge-c { background: rgba(232, 223, 200, 0.15); color: var(--cream-dark, #d8cfb8); }
+.lane-badge-c { background: rgba(232, 223, 200, 0.12); color: rgba(232,223,200,0.7); }

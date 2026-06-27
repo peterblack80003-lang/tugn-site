@@ -1,361 +1,430 @@
+import Image from 'next/image'
 import Link from 'next/link'
-import { getArticles, getSiteSettings } from '@/lib/queries'
+import { getSiteSettings } from '@/lib/queries'
+import StatsBar from '@/components/StatsBar'
 
-function PlaceholderArticleCard() {
-  return (
-    <div
-      style={{
-        background: 'var(--surface)',
-        border: '1px solid var(--border)',
-        borderRadius: '8px',
-        padding: '1.5rem',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.75rem',
-      }}
-    >
-      <div style={{ height: '1rem', background: 'rgba(255,255,255,0.08)', borderRadius: 4 }} />
-      <div style={{ height: '0.8rem', background: 'rgba(255,255,255,0.05)', borderRadius: 4, width: '60%' }} />
-      <div style={{ height: '0.75rem', background: 'rgba(255,255,255,0.04)', borderRadius: 4 }} />
-      <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontStyle: 'italic' }}>Coming soon</p>
-    </div>
-  )
-}
+const seriesCards = [
+  {
+    lane: 'Tomato Masterclass',
+    accentColor: '#D4601A',
+    borderColor: '#D4601A',
+    heading: 'Six episodes. Start to harvest.',
+    body: 'Timing, varieties, soil, water, pruning, harvest. Zone 5b specific. No filler.',
+    cta: 'Watch the series →',
+    href: '/tomato-masterclass',
+  },
+  {
+    lane: 'Garden Systems',
+    accentColor: '#4A8C2A',
+    borderColor: '#4A8C2A',
+    heading: 'Beds, soil, water, drip.',
+    body: 'The infrastructure decisions that determine whether your garden works or doesn\'t.',
+    cta: 'Build the system →',
+    href: '/gardening-guides',
+  },
+  {
+    lane: 'Fix It',
+    accentColor: '#8B5E3C',
+    borderColor: '#8B5E3C',
+    heading: 'Something\'s wrong. Let\'s fix it.',
+    body: 'Problem-first videos for when the plants aren\'t cooperating and you need answers.',
+    cta: 'Find the fix →',
+    href: '/videos',
+  },
+]
 
 export default async function HomePage() {
-  const [articles, settings] = await Promise.all([
-    getArticles().catch(() => []),
-    getSiteSettings().catch(() => null),
-  ])
-
-  const recentArticles = articles.slice(0, 3)
+  const settings = await getSiteSettings().catch(() => null)
   const featuredId = settings?.featured_episode_id
-  const featuredTitle = settings?.featured_episode_title || 'Latest Episode'
-  const featuredDesc = settings?.featured_episode_description || ''
 
   return (
     <>
-      {/* 1. Hero */}
+      {/* ── HERO ── */}
       <section
         style={{
-          background: 'linear-gradient(135deg, #111b29 0%, #1A2535 60%, #1e2d42 100%)',
-          paddingTop: '120px',
-          paddingBottom: '80px',
-          textAlign: 'center',
+          position: 'relative',
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundImage: 'url(/background.webp)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundColor: '#111827',
         }}
       >
-        <div className="container" style={{ maxWidth: '720px' }}>
+        {/* Dark overlay */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'rgba(17,24,39,0.82)',
+          }}
+          aria-hidden="true"
+        />
+
+        {/* Hero content */}
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 1,
+            textAlign: 'center',
+            padding: '4rem 1.5rem 5rem',
+            width: '100%',
+            maxWidth: '720px',
+            margin: '0 auto',
+          }}
+        >
+          {/* Circular logo badge */}
+          <div className="hero-logo-wrapper" style={{ marginBottom: '2rem' }}>
+            <Image
+              src="/tugn-logo-primary.png"
+              alt="The Urban Gardening Neighbor"
+              fill
+              sizes="(max-width: 767px) 160px, (max-width: 1023px) 200px, 260px"
+              priority
+              style={{ objectFit: 'contain' }}
+            />
+          </div>
+
+          {/* Eyebrow */}
           <p
             style={{
               color: '#4A8C2A',
-              fontSize: '0.8rem',
-              fontWeight: 700,
-              letterSpacing: '0.15em',
+              fontSize: '11px',
+              letterSpacing: '4px',
               textTransform: 'uppercase',
-              marginBottom: '1rem',
+              fontFamily: 'var(--font-inter, Inter, sans-serif)',
+              marginBottom: '1.1rem',
+              fontWeight: 500,
             }}
           >
             Zone 5b · Denver
           </p>
+
+          {/* H1 */}
           <h1
             style={{
-              fontSize: 'clamp(2.2rem, 5vw, 3.5rem)',
-              lineHeight: 1.1,
-              color: '#E8DFC8',
+              fontSize: 'clamp(2.8rem, 5vw, 4.2rem)',
+              lineHeight: 1.05,
               marginBottom: '1.25rem',
-            }}
-          >
-            Built. Not bought.
-          </h1>
-          <p
-            style={{
-              fontSize: '1.15rem',
-              color: 'rgba(232,223,200,0.7)',
-              lineHeight: 1.7,
-              marginBottom: '2rem',
-            }}
-          >
-            Real urban gardening — no gimmicks, no sponsorships. Just what works
-            in the ground, season after season.
-          </p>
-          <Link href="/tomato-masterclass" className="btn-green" style={{ fontSize: '1rem' }}>
-            Watch the Series
-          </Link>
-        </div>
-      </section>
-
-      {/* 2. Featured Episode */}
-      <section style={{ background: 'var(--surface)', padding: '5rem 0' }}>
-        <div className="container" style={{ maxWidth: '860px' }}>
-          <h2
-            style={{
-              textAlign: 'center',
-              marginBottom: '2rem',
-              fontSize: '1.75rem',
-              color: '#E8DFC8',
-            }}
-          >
-            {featuredId ? featuredTitle : 'New Episode Coming Soon'}
-          </h2>
-          {featuredId ? (
-            <>
-              <div
-                style={{
-                  position: 'relative',
-                  paddingBottom: '56.25%',
-                  height: 0,
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  background: '#000',
-                }}
-              >
-                <iframe
-                  src={`https://www.youtube.com/embed/${featuredId}`}
-                  title={featuredTitle}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    border: 0,
-                  }}
-                />
-              </div>
-              {featuredDesc && (
-                <p
-                  style={{
-                    marginTop: '1.25rem',
-                    color: 'rgba(232,223,200,0.7)',
-                    lineHeight: 1.7,
-                    textAlign: 'center',
-                  }}
-                >
-                  {featuredDesc}
-                </p>
-              )}
-            </>
-          ) : (
-            <div
-              style={{
-                background: 'rgba(0,0,0,0.3)',
-                borderRadius: '8px',
-                padding: '4rem 2rem',
-                textAlign: 'center',
-                color: 'rgba(232,223,200,0.4)',
-                border: '1px dashed rgba(255,255,255,0.1)',
-              }}
-            >
-              <p style={{ fontSize: '1rem' }}>
-                New episode coming soon — subscribe on YouTube so you don&apos;t miss it.
-              </p>
-              <a
-                href="https://youtube.com/@theurbangardeningneighbor"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-outline"
-                style={{ marginTop: '1.5rem', display: 'inline-block' }}
-              >
-                Subscribe on YouTube
-              </a>
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* 3. Tomato Masterclass CTA */}
-      <section
-        style={{
-          background: '#111b29',
-          padding: '5rem 0',
-          borderTop: '1px solid rgba(255,255,255,0.06)',
-        }}
-      >
-        <div className="container" style={{ maxWidth: '720px', textAlign: 'center' }}>
-          <p
-            style={{
-              color: '#D4601A',
-              fontSize: '0.75rem',
+              fontFamily: 'var(--font-roboto-slab, serif)',
               fontWeight: 700,
-              letterSpacing: '0.15em',
-              textTransform: 'uppercase',
-              marginBottom: '0.75rem',
             }}
           >
-            Free Video Series
-          </p>
-          <h2
-            style={{
-              fontSize: 'clamp(1.6rem, 4vw, 2.5rem)',
-              color: '#E8DFC8',
-              marginBottom: '1rem',
-            }}
-          >
-            The Tomato Masterclass
-          </h2>
-          <p
-            style={{
-              color: 'rgba(232,223,200,0.7)',
-              lineHeight: 1.7,
-              marginBottom: '2rem',
-              fontSize: '1.05rem',
-            }}
-          >
-            Start-to-finish tomato growing for Zone 5b and beyond. Soil prep,
-            transplanting, pruning, disease prevention, and harvest — every step
-            on camera.
-          </p>
-          <Link href="/tomato-masterclass" className="btn-orange">
-            Start the Series →
-          </Link>
-        </div>
-      </section>
+            <span style={{ color: '#E8DFC8' }}>Built.</span>
+            <br />
+            <span style={{ color: '#4A8C2A' }}>Not bought.</span>
+          </h1>
 
-      {/* 4. Recent Articles */}
-      <section style={{ background: 'var(--bg)', padding: '5rem 0' }}>
-        <div className="container">
-          <h2
-            style={{
-              textAlign: 'center',
-              fontSize: '1.75rem',
-              marginBottom: '0.5rem',
-              color: '#E8DFC8',
-            }}
-          >
-            Recent Guides
-          </h2>
+          {/* Subheadline */}
           <p
             style={{
-              textAlign: 'center',
-              color: 'rgba(232,223,200,0.5)',
-              marginBottom: '2.5rem',
-              fontSize: '0.95rem',
+              fontSize: '1.05rem',
+              color: 'rgba(232,223,200,0.8)',
+              lineHeight: 1.7,
+              maxWidth: '540px',
+              margin: '0 auto 2.25rem',
+              fontFamily: 'var(--font-inter, Inter, sans-serif)',
             }}
           >
-            Written to go with the videos — not instead of them.
+            Zone 5b raised beds, drip systems, and tomatoes that actually produce.
+            Fifty videos of what I tested, what failed, and what I&apos;d do again.
           </p>
+
+          {/* CTA buttons */}
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-              gap: '1.5rem',
+              display: 'flex',
+              gap: '1rem',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
             }}
           >
-            {recentArticles.length > 0
-              ? recentArticles.map((a: { _id: string; title: string; slug?: { current: string }; meta_description?: string; published_at?: string; content_lane?: string }) => (
-                  <article
-                    key={a._id}
-                    style={{
-                      background: 'var(--surface)',
-                      border: '1px solid var(--border)',
-                      borderRadius: '8px',
-                      padding: '1.5rem',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '0.75rem',
-                    }}
-                  >
-                    {a.content_lane && (
-                      <span className={`lane-badge lane-badge-${a.content_lane.toLowerCase()}`}>
-                        Lane {a.content_lane}
-                      </span>
-                    )}
-                    <h3 style={{ fontSize: '1.05rem', color: '#E8DFC8', lineHeight: 1.35 }}>
-                      {a.title}
-                    </h3>
-                    {a.meta_description && (
-                      <p
-                        style={{
-                          fontSize: '0.88rem',
-                          color: 'rgba(232,223,200,0.6)',
-                          lineHeight: 1.6,
-                          flex: 1,
-                        }}
-                      >
-                        {a.meta_description}
-                      </p>
-                    )}
-                    {a.published_at && (
-                      <p style={{ fontSize: '0.78rem', color: 'rgba(232,223,200,0.35)' }}>
-                        {new Date(a.published_at).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
-                      </p>
-                    )}
-                    <Link
-                      href={`/gardening-guides/${a.slug?.current}`}
-                      style={{ color: '#4A8C2A', fontSize: '0.88rem', fontWeight: 600 }}
-                    >
-                      Read more →
-                    </Link>
-                  </article>
-                ))
-              : [0, 1, 2].map((i) => <PlaceholderArticleCard key={i} />)}
+            <Link href="/tomato-masterclass" className="btn-green">
+              Watch the Series
+            </Link>
+            <Link href="/start-here" className="btn-outline">
+              Start Here
+            </Link>
           </div>
-          {recentArticles.length > 0 && (
-            <div style={{ textAlign: 'center', marginTop: '2.5rem' }}>
-              <Link href="/gardening-guides" className="btn-outline">
-                View all guides
-              </Link>
-            </div>
-          )}
+        </div>
+
+        {/* Scroll indicator */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '2rem',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '0.4rem',
+            opacity: 0.4,
+          }}
+          aria-hidden="true"
+        >
+          <span
+            style={{
+              fontSize: '10px',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              fontFamily: 'var(--font-inter, Inter, sans-serif)',
+              color: '#E8DFC8',
+            }}
+          >
+            Scroll
+          </span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="#E8DFC8">
+            <path d="M8 3v10M4 9l4 4 4-4" stroke="#E8DFC8" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </div>
       </section>
 
-      {/* 5. Email Capture */}
-      <section style={{ background: '#E8DFC8', padding: '5rem 0' }}>
-        <div className="container" style={{ maxWidth: '540px', textAlign: 'center' }}>
-          <h2 style={{ color: '#1A2535', fontSize: '1.75rem', marginBottom: '0.75rem' }}>
-            Get the Newsletter
-          </h2>
-          <p style={{ color: 'rgba(26,37,53,0.7)', lineHeight: 1.7, marginBottom: '2rem' }}>
-            Seasonal planting reminders, new video alerts, and what&apos;s actually
-            happening in the garden — straight to your inbox.
-          </p>
-          <form
-            style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center' }}
+      {/* ── STATS BAR ── */}
+      <StatsBar />
+
+      {/* ── SERIES CARDS ── */}
+      <section style={{ background: '#111827', padding: '5rem 0' }}>
+        <div className="container">
+          {/* Eyebrow */}
+          <p
+            style={{
+              color: '#4A8C2A',
+              fontSize: '11px',
+              letterSpacing: '3px',
+              textTransform: 'uppercase',
+              fontFamily: 'var(--font-inter, Inter, sans-serif)',
+              textAlign: 'center',
+              marginBottom: '0.75rem',
+              fontWeight: 600,
+            }}
           >
-            <input
-              type="email"
-              placeholder="your@email.com"
-              required
-              style={{
-                flex: '1 1 220px',
-                padding: '0.75rem 1rem',
-                border: '2px solid #1A2535',
-                borderRadius: '4px',
-                fontSize: '0.95rem',
-                background: '#fff',
-                color: '#1A2535',
-                outline: 'none',
-              }}
-            />
-            <button
-              type="submit"
-              style={{
-                background: '#1A2535',
-                color: '#E8DFC8',
-                padding: '0.75rem 1.5rem',
-                borderRadius: '4px',
-                border: 'none',
-                fontWeight: 600,
-                cursor: 'pointer',
-                fontSize: '0.95rem',
-                flexShrink: 0,
-              }}
-            >
-              Subscribe
-            </button>
-          </form>
-          <p style={{ marginTop: '1rem', fontSize: '0.78rem', color: 'rgba(26,37,53,0.45)' }}>
-            No spam. Unsubscribe any time.
+            Start Here
           </p>
+
+          <h2
+            style={{
+              textAlign: 'center',
+              fontSize: 'clamp(1.6rem, 3vw, 2rem)',
+              color: '#E8DFC8',
+              marginBottom: '3rem',
+              fontFamily: 'var(--font-roboto-slab, serif)',
+            }}
+          >
+            Where do you want to start?
+          </h2>
+
+          <div className="series-grid">
+            {seriesCards.map((card) => (
+              <div
+                key={card.lane}
+                style={{
+                  background: '#1a2535',
+                  border: '1px solid rgba(74,140,42,0.2)',
+                  borderTop: `3px solid ${card.borderColor}`,
+                  borderRadius: '8px',
+                  padding: '1.75rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.85rem',
+                }}
+              >
+                <p
+                  style={{
+                    color: card.accentColor,
+                    fontSize: '10px',
+                    letterSpacing: '3px',
+                    textTransform: 'uppercase',
+                    fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                    fontWeight: 700,
+                    margin: 0,
+                  }}
+                >
+                  {card.lane}
+                </p>
+                <h3
+                  style={{
+                    fontSize: '1.15rem',
+                    color: '#E8DFC8',
+                    margin: 0,
+                    fontFamily: 'var(--font-roboto-slab, serif)',
+                  }}
+                >
+                  {card.heading}
+                </h3>
+                <p
+                  style={{
+                    fontSize: '0.9rem',
+                    color: 'rgba(232,223,200,0.65)',
+                    lineHeight: 1.65,
+                    margin: 0,
+                    flex: 1,
+                    fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                  }}
+                >
+                  {card.body}
+                </p>
+                <Link
+                  href={card.href}
+                  style={{
+                    color: card.accentColor,
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                    marginTop: '0.25rem',
+                    transition: 'opacity 0.15s',
+                  }}
+                >
+                  {card.cta}
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
+
+      {/* ── MERCH FEATURE ── */}
+      <section
+        style={{
+          background: '#1a2535',
+          borderTop: '1px solid rgba(232,223,200,0.06)',
+          borderBottom: '1px solid rgba(232,223,200,0.06)',
+          padding: '5rem 0',
+        }}
+      >
+        <div className="container">
+          <div className="merch-layout">
+            {/* Text block */}
+            <div style={{ maxWidth: '520px' }}>
+              <p
+                style={{
+                  color: '#4A8C2A',
+                  fontSize: '11px',
+                  letterSpacing: '3px',
+                  textTransform: 'uppercase',
+                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                  fontWeight: 600,
+                  marginBottom: '0.75rem',
+                }}
+              >
+                TUGN Merch
+              </p>
+              <h2
+                style={{
+                  fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+                  color: '#E8DFC8',
+                  marginBottom: '1rem',
+                  fontFamily: 'var(--font-roboto-slab, serif)',
+                }}
+              >
+                Gear and merch from the garden.
+              </h2>
+              <p
+                style={{
+                  fontSize: '1rem',
+                  color: 'rgba(232,223,200,0.65)',
+                  lineHeight: 1.7,
+                  marginBottom: '1.75rem',
+                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                }}
+              >
+                Stuff I&apos;d actually use or wear. Garden gear, TUGN characters, and
+                print-on-demand products.
+              </p>
+              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                <a
+                  href="https://the-urban-gardening-neighbor-shop.myshopify.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-green"
+                >
+                  Visit the Shop
+                </a>
+                <Link href="/gear" className="btn-outline-green">
+                  Gear I Use
+                </Link>
+              </div>
+            </div>
+
+            {/* Placeholder artwork */}
+            <div
+              style={{
+                width: '240px',
+                height: '240px',
+                flexShrink: 0,
+                border: '1px dashed rgba(232,223,200,0.2)',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+                padding: '1.5rem',
+                margin: '0 auto',
+              }}
+            >
+              <p
+                style={{
+                  color: 'rgba(232,223,200,0.35)',
+                  fontSize: '0.82rem',
+                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                  lineHeight: 1.6,
+                }}
+              >
+                Character artwork
+                <br />
+                coming soon
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FEATURED VIDEO (if set in Sanity) ── */}
+      {featuredId && (
+        <section style={{ background: '#111827', padding: '5rem 0' }}>
+          <div className="container" style={{ maxWidth: '860px' }}>
+            <h2
+              style={{
+                textAlign: 'center',
+                marginBottom: '2rem',
+                fontSize: '1.6rem',
+                color: '#E8DFC8',
+                fontFamily: 'var(--font-roboto-slab, serif)',
+              }}
+            >
+              {settings?.featured_episode_title || 'Latest Episode'}
+            </h2>
+            <div
+              style={{
+                position: 'relative',
+                paddingBottom: '56.25%',
+                height: 0,
+                borderRadius: '8px',
+                overflow: 'hidden',
+                background: '#000',
+              }}
+            >
+              <iframe
+                src={`https://www.youtube.com/embed/${featuredId}`}
+                title={settings?.featured_episode_title || 'Latest Episode'}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  border: 0,
+                }}
+              />
+            </div>
+          </div>
+        </section>
+      )}
     </>
   )
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Roboto_Slab, Inter } from 'next/font/google'
 import './globals.css'
-import Nav from '@/components/Nav'
+import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
 const robotoSlab = Roboto_Slab({
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: '%s | The Urban Gardening Neighbor',
   },
   description:
-    'Real gardening from Zone 5b Denver. Tomatoes, soil systems, and practical problem-solving — built, not bought.',
+    'Zone 5b raised beds, drip systems, and tomatoes that actually produce. Real gardening — built, not bought.',
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || 'https://the-urban-gardening-neighbor.com'
   ),
@@ -48,9 +48,17 @@ export default function RootLayout({
       lang="en"
       className={`${robotoSlab.variable} ${inter.variable}`}
     >
-      <body className="flex flex-col min-h-screen">
-        <Nav />
-        <main className="flex-1">{children}</main>
+      <body
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',
+          background: '#111827',
+          color: '#E8DFC8',
+        }}
+      >
+        <Header />
+        <main style={{ flex: 1 }}>{children}</main>
         <Footer />
       </body>
     </html>
