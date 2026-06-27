@@ -23,7 +23,7 @@ const seriesCards = [
     href: '/gardening-guides',
   },
   {
-    lane: 'Fix It',
+    lane: 'FIX IT',
     accentColor: '#8B5E3C',
     borderColor: '#8B5E3C',
     heading: 'Something\'s wrong. Let\'s fix it.',
@@ -352,8 +352,8 @@ export default async function HomePage() {
             {/* Placeholder artwork */}
             <div
               style={{
-                width: '240px',
-                height: '240px',
+                width: '200px',
+                height: '200px',
                 flexShrink: 0,
                 border: '1px dashed rgba(232,223,200,0.2)',
                 borderRadius: '8px',
@@ -362,7 +362,7 @@ export default async function HomePage() {
                 justifyContent: 'center',
                 textAlign: 'center',
                 padding: '1.5rem',
-                margin: '0 auto',
+                margin: 'auto',
               }}
             >
               <p
