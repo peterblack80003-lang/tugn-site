@@ -6,29 +6,35 @@ import { useState, useEffect } from 'react'
 import { client } from '@/lib/sanity'
 
 const desktopLinks = [
-  { href: '/start-here', label: 'Start Here' },
-  { href: '/tomato-masterclass', label: 'Masterclass' },
-  { href: '/tomato-problem-solver', label: 'Tomato Problem Solver' },
-  { href: '/gardening-guides', label: 'Guides' },
-  { href: '/zone-5-denver-gardening-guide', label: 'Zone 5 Guide' },
-  { href: '/raised-bed-command-center', label: 'Raised Bed Hub' },
-  { href: '/articles', label: 'Articles' },
-  { href: '/videos', label: 'Videos' },
+  { href: 'https://youtube.com/@theurbangardeningneighbor', label: 'Videos', external: true },
+  { href: '/articles', label: 'Articles', external: false },
+  { href: '/zone-5-denver-gardening-guide', label: 'Start Here', external: false },
+  { href: '/shop', label: 'Shop', external: false },
 ]
 
-const overlayLinks = [
-  { href: '/start-here', label: 'Start Here' },
-  { href: '/tomato-masterclass', label: 'Masterclass' },
-  { href: '/tomato-problem-solver', label: 'Tomato Problem Solver' },
-  { href: '/gardening-guides', label: 'Guides' },
-  { href: '/zone-5-denver-gardening-guide', label: 'Zone 5 Guide' },
-  { href: '/raised-bed-command-center', label: 'Raised Bed Hub' },
-  { href: '/articles', label: 'Articles' },
-  { href: '/videos', label: 'Videos' },
-  { href: '/shop', label: 'Shop' },
-  { href: '/gear', label: 'Gear I Use' },
-  { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
+const overlayGroups = [
+  {
+    label: 'Learn',
+    links: [
+      { href: '/zone-5-denver-gardening-guide', label: 'Start Here' },
+      { href: '/raised-bed-command-center', label: 'Raised Bed Command Center' },
+      { href: '/tomato-problem-solver', label: 'Tomato Problem Solver' },
+      { href: '/articles', label: 'Articles' },
+    ],
+  },
+  {
+    label: 'Watch',
+    links: [
+      { href: 'https://youtube.com/@theurbangardeningneighbor', label: 'YouTube Channel', external: true },
+    ],
+  },
+  {
+    label: 'Shop',
+    links: [
+      { href: '/shop', label: 'Merch' },
+      { href: '/gear', label: 'Gear I Use' },
+    ],
+  },
 ]
 
 export default function Header() {
@@ -103,31 +109,40 @@ export default function Header() {
 
           {/* Right side: desktop links + hamburger */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            {/* Desktop nav items — hidden on mobile */}
+            {/* Desktop nav — hidden on mobile */}
             <ul
               className="hidden md:flex"
               style={{ listStyle: 'none', margin: 0, padding: 0, alignItems: 'center', gap: '0.1rem' }}
             >
-              {desktopLinks.map(({ href, label }) => {
-                const active = pathname === href || (href !== '/' && pathname.startsWith(href))
+              {desktopLinks.map(({ href, label, external }) => {
+                const active = !external && (pathname === href || (pathname.startsWith(href) && href !== '/'))
+                const linkStyle = {
+                  display: 'block',
+                  padding: '0.4rem 0.7rem',
+                  fontSize: '0.875rem',
+                  fontWeight: active ? 600 : 400,
+                  color: active ? '#4A8C2A' : 'rgba(232,223,200,0.75)',
+                  borderBottom: active ? '2px solid #4A8C2A' : '2px solid transparent',
+                  transition: 'color 0.15s',
+                  whiteSpace: 'nowrap' as const,
+                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                }
                 return (
                   <li key={href}>
-                    <Link
-                      href={href}
-                      style={{
-                        display: 'block',
-                        padding: '0.4rem 0.7rem',
-                        fontSize: '0.875rem',
-                        fontWeight: active ? 600 : 400,
-                        color: active ? '#4A8C2A' : 'rgba(232,223,200,0.75)',
-                        borderBottom: active ? '2px solid #4A8C2A' : '2px solid transparent',
-                        transition: 'color 0.15s',
-                        whiteSpace: 'nowrap',
-                        fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                      }}
-                    >
-                      {label}
-                    </Link>
+                    {external ? (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={linkStyle}
+                      >
+                        {label}
+                      </a>
+                    ) : (
+                      <Link href={href} style={linkStyle}>
+                        {label}
+                      </Link>
+                    )}
                   </li>
                 )
               })}
@@ -220,34 +235,71 @@ export default function Header() {
             </button>
           </div>
 
-          {/* Overlay links */}
-          <nav style={{ paddingTop: '1.5rem', flex: 1 }}>
-            <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-              {overlayLinks.map(({ href, label }) => {
-                const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
-                return (
-                  <li key={href}>
-                    <Link
-                      href={href}
-                      onClick={() => setMenuOpen(false)}
-                      style={{
-                        display: 'block',
-                        padding: '1.1rem 0',
-                        fontSize: 'clamp(1.5rem, 5vw, 2.2rem)',
-                        fontFamily: 'var(--font-roboto-slab, serif)',
-                        fontWeight: 700,
-                        color: active ? '#4A8C2A' : '#E8DFC8',
-                        borderBottom: '1px solid rgba(232,223,200,0.06)',
-                        transition: 'color 0.15s',
-                        letterSpacing: '-0.01em',
-                      }}
-                    >
-                      {label}
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
+          {/* Grouped overlay links */}
+          <nav style={{ paddingTop: '1.25rem', flex: 1 }}>
+            {overlayGroups.map((group, gi) => (
+              <div
+                key={group.label}
+                style={{ marginBottom: gi < overlayGroups.length - 1 ? '1.5rem' : 0 }}
+              >
+                {/* Group label */}
+                <p
+                  style={{
+                    color: 'rgba(232,223,200,0.35)',
+                    fontSize: '0.68rem',
+                    fontWeight: 600,
+                    letterSpacing: '3px',
+                    textTransform: 'uppercase',
+                    fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                    margin: '0 0 0.1rem',
+                    paddingTop: gi > 0 ? '0.5rem' : 0,
+                    borderTop: gi > 0 ? '1px solid rgba(232,223,200,0.06)' : 'none',
+                  }}
+                >
+                  {group.label}
+                </p>
+
+                <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                  {group.links.map(({ href, label, external }) => {
+                    const active = !external && (href === '/' ? pathname === '/' : pathname.startsWith(href))
+                    const linkStyle = {
+                      display: 'block',
+                      padding: '0.9rem 0',
+                      fontSize: 'clamp(1.4rem, 4.5vw, 2rem)',
+                      fontFamily: 'var(--font-roboto-slab, serif)',
+                      fontWeight: 700,
+                      color: active ? '#4A8C2A' : '#E8DFC8',
+                      borderBottom: '1px solid rgba(232,223,200,0.06)',
+                      transition: 'color 0.15s',
+                      letterSpacing: '-0.01em',
+                    }
+                    return (
+                      <li key={href}>
+                        {external ? (
+                          <a
+                            href={href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setMenuOpen(false)}
+                            style={linkStyle}
+                          >
+                            {label}
+                          </a>
+                        ) : (
+                          <Link
+                            href={href}
+                            onClick={() => setMenuOpen(false)}
+                            style={linkStyle}
+                          >
+                            {label}
+                          </Link>
+                        )}
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            ))}
           </nav>
 
           {/* Overlay footer */}
