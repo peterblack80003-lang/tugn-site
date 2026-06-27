@@ -3,6 +3,7 @@ import Link from 'next/link'
 const navLinks = [
   { href: '/start-here', label: 'Start Here' },
   { href: '/tomato-masterclass', label: 'Masterclass' },
+  { href: '/tomato-problem-solver', label: 'Tomato Problem Solver' },
   { href: '/gardening-guides', label: 'Guides' },
   { href: '/zone-5-denver-gardening-guide', label: 'Zone 5 Guide' },
   { href: '/raised-bed-command-center', label: 'Raised Bed Hub' },
