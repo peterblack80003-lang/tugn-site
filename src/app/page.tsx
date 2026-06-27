@@ -41,9 +41,9 @@ export default async function HomePage() {
     <>
       {/* ── HERO ── */}
       <section
+        className="hero-section"
         style={{
           position: 'relative',
-          minHeight: '100vh',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -78,12 +78,13 @@ export default async function HomePage() {
           {/* Circular logo badge */}
           <div className="hero-logo-wrapper" style={{ marginBottom: '2rem' }}>
             <Image
-              src="/tugn-logo-primary.png"
+              src="/tugn-logo-primary.webp"
               alt="The Urban Gardening Neighbor"
               fill
               sizes="(max-width: 767px) 160px, (max-width: 1023px) 200px, 260px"
               priority
-              style={{ objectFit: 'contain' }}
+              className="hero-logo-img"
+              style={{ objectFit: 'cover' }}
             />
           </div>
 
