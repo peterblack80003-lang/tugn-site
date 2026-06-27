@@ -138,11 +138,11 @@ img {
 
 /* ── Hero section ── */
 .hero-section {
-  min-height: 85vh;
+  min-height: 75vh;
 }
 
 @media (min-width: 1024px) {
-  .hero-section { min-height: 100vh; }
+  .hero-section { min-height: 85vh; }
 }
 
 /* ── Hero logo ── */

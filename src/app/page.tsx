@@ -58,7 +58,7 @@ export default async function HomePage() {
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'rgba(17,24,39,0.68)',
+            background: 'rgba(17,24,39,0.60)',
           }}
           aria-hidden="true"
         />
@@ -69,7 +69,7 @@ export default async function HomePage() {
             position: 'relative',
             zIndex: 1,
             textAlign: 'center',
-            padding: '4rem 1.5rem 5rem',
+            padding: '80px 1.5rem 5rem',
             width: '100%',
             maxWidth: '720px',
             margin: '0 auto',
@@ -225,10 +225,11 @@ export default async function HomePage() {
                   border: '1px solid rgba(74,140,42,0.2)',
                   borderTop: `3px solid ${card.borderColor}`,
                   borderRadius: '8px',
-                  padding: '1.75rem',
+                  padding: '2rem',
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '0.85rem',
+                  minHeight: '220px',
                 }}
               >
                 <p
@@ -246,7 +247,7 @@ export default async function HomePage() {
                 </p>
                 <h3
                   style={{
-                    fontSize: '1.15rem',
+                    fontSize: '1.2rem',
                     color: '#E8DFC8',
                     margin: 0,
                     fontFamily: 'var(--font-roboto-slab, serif)',
@@ -256,7 +257,7 @@ export default async function HomePage() {
                 </h3>
                 <p
                   style={{
-                    fontSize: '0.9rem',
+                    fontSize: '0.95rem',
                     color: 'rgba(232,223,200,0.65)',
                     lineHeight: 1.65,
                     margin: 0,

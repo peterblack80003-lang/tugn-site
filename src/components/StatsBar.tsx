@@ -20,10 +20,10 @@ export default function StatsBar() {
   }, [])
 
   const stats: Stat[] = [
-    { number: String(videoCount), label: 'Videos' },
-    { number: '3', label: 'Series' },
-    { number: '5b', label: 'Zone Tested' },
-    { number: '0', label: 'Gimmicks' },
+    { number: String(videoCount), label: 'VIDEOS' },
+    { number: '3', label: 'SERIES' },
+    { number: '5b', label: 'ZONE TESTED' },
+    { number: '0', label: 'GIMMICKS' },
   ]
 
   return (
