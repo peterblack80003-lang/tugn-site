@@ -27,7 +27,13 @@ export default function StatsBar() {
   ]
 
   return (
-    <section style={{ background: '#4A8C2A' }}>
+    <section
+      style={{
+        background: '#4A8C2A',
+        borderTop: '1px solid rgba(255,255,255,0.12)',
+        borderBottom: '1px solid rgba(255,255,255,0.12)',
+      }}
+    >
       <div className="stats-grid">
         {stats.map((stat, i) => (
           <div key={stat.label} className="stat-item" style={{ textAlign: 'center' }}>
@@ -48,9 +54,9 @@ export default function StatsBar() {
             <div
               style={{
                 color: '#fff',
-                fontSize: '1.8rem',
+                fontSize: '2.25rem',
                 fontFamily: 'var(--font-roboto-slab, serif)',
-                fontWeight: 700,
+                fontWeight: 900,
                 lineHeight: 1.1,
                 marginBottom: '0.35rem',
               }}
@@ -61,9 +67,10 @@ export default function StatsBar() {
               style={{
                 color: 'rgba(255,255,255,0.82)',
                 fontSize: '11px',
-                letterSpacing: '2px',
+                letterSpacing: '3px',
                 textTransform: 'uppercase',
                 fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                fontWeight: 600,
               }}
             >
               {stat.label}

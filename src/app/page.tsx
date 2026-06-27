@@ -12,6 +12,8 @@ const seriesCards = [
     body: 'Timing, varieties, soil, water, pruning, harvest. Zone 5b specific. No filler.',
     cta: 'Watch the series →',
     href: '/tomato-masterclass',
+    image: 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?w=800&q=80',
+    imageAlt: 'Ripe red tomatoes growing on the vine',
   },
   {
     lane: 'Garden Systems',
@@ -21,6 +23,8 @@ const seriesCards = [
     body: 'The infrastructure decisions that determine whether your garden works or doesn\'t.',
     cta: 'Build the system →',
     href: '/gardening-guides',
+    image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80',
+    imageAlt: 'Raised garden beds with thriving vegetables',
   },
   {
     lane: 'FIX IT',
@@ -30,6 +34,8 @@ const seriesCards = [
     body: 'Problem-first videos for when the plants aren\'t cooperating and you need answers.',
     cta: 'Find the fix →',
     href: '/videos',
+    image: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=800&q=80',
+    imageAlt: 'Gardener tending to plants in a raised bed',
   },
 ]
 
@@ -96,7 +102,7 @@ export default async function HomePage() {
               textTransform: 'uppercase',
               fontFamily: 'var(--font-inter, Inter, sans-serif)',
               marginBottom: '1.1rem',
-              fontWeight: 500,
+              fontWeight: 600,
             }}
           >
             Zone 5b · Denver
@@ -105,11 +111,11 @@ export default async function HomePage() {
           {/* H1 */}
           <h1
             style={{
-              fontSize: 'clamp(2.8rem, 5vw, 4.2rem)',
+              fontSize: 'clamp(3rem, 7vw, 4.5rem)',
               lineHeight: 1.05,
               marginBottom: '1.25rem',
               fontFamily: 'var(--font-roboto-slab, serif)',
-              fontWeight: 700,
+              fontWeight: 900,
             }}
           >
             <span style={{ color: '#E8DFC8' }}>Built.</span>
@@ -144,7 +150,7 @@ export default async function HomePage() {
             <Link href="/tomato-masterclass" className="btn-green">
               Watch the Series
             </Link>
-            <Link href="/start-here" className="btn-outline">
+            <Link href="/zone-5-denver-gardening-guide" className="btn-outline">
               Start Here
             </Link>
           </div>
@@ -185,8 +191,81 @@ export default async function HomePage() {
       {/* ── STATS BAR ── */}
       <StatsBar />
 
+      {/* ── START HERE ENTRY POINT ── */}
+      <section
+        style={{
+          background: '#111827',
+          padding: '3rem 0',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
+        }}
+      >
+        <div className="container">
+          <div
+            style={{
+              background: '#1a2535',
+              borderLeft: '4px solid #4A8C2A',
+              borderRadius: '0 8px 8px 0',
+              padding: '2rem 2rem 2rem 2rem',
+              maxWidth: '700px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.85rem',
+            }}
+          >
+            <p
+              style={{
+                color: '#4A8C2A',
+                fontSize: '11px',
+                letterSpacing: '3px',
+                textTransform: 'uppercase',
+                fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                fontWeight: 600,
+                margin: 0,
+              }}
+            >
+              New to the channel?
+            </p>
+            <h2
+              style={{
+                fontSize: 'clamp(1.25rem, 2.5vw, 1.55rem)',
+                color: '#E8DFC8',
+                margin: 0,
+                fontFamily: 'var(--font-roboto-slab, serif)',
+                fontWeight: 700,
+                lineHeight: 1.2,
+              }}
+            >
+              Start with the Zone 5b Denver Guide
+            </h2>
+            <p
+              style={{
+                fontSize: '0.95rem',
+                color: 'rgba(232,223,200,0.7)',
+                lineHeight: 1.7,
+                fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                margin: 0,
+              }}
+            >
+              Everything you need to know about gardening on the Front Range — frost dates,
+              what grows, what doesn&apos;t, and why raised beds change everything.
+            </p>
+            <div>
+              <Link href="/zone-5-denver-gardening-guide" className="btn-green">
+                Start Here →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── SERIES CARDS ── */}
-      <section style={{ background: '#111827', padding: '5rem 0' }}>
+      <section
+        style={{
+          background: '#111827',
+          padding: '5rem 0',
+          borderTop: '1px solid rgba(255,255,255,0.08)',
+        }}
+      >
         <div className="container">
           {/* Eyebrow */}
           <p
@@ -201,7 +280,7 @@ export default async function HomePage() {
               fontWeight: 600,
             }}
           >
-            Start Here
+            What We Grow Here
           </p>
 
           <h2
@@ -217,75 +296,98 @@ export default async function HomePage() {
           </h2>
 
           <div className="series-grid">
-            {seriesCards.map((card, i) => {
-              const accentColor = i === 2 ? '#8B5E3C' : card.accentColor
-              const borderColor = i === 2 ? '#8B5E3C' : card.borderColor
-              return (
+            {seriesCards.map((card) => (
               <div
                 key={card.lane}
                 style={{
                   background: '#1a2535',
                   border: '1px solid rgba(74,140,42,0.2)',
-                  borderTop: `3px solid ${borderColor}`,
+                  borderTop: `3px solid ${card.borderColor}`,
                   borderRadius: '8px',
-                  padding: '2rem',
+                  overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: '0.85rem',
-                  minHeight: '220px',
                 }}
               >
-                <p
+                {/* Card image — 16:9 */}
+                <div style={{ position: 'relative', aspectRatio: '16 / 9' }}>
+                  <Image
+                    src={card.image}
+                    alt={card.imageAlt}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    style={{ objectFit: 'cover' }}
+                  />
+                  {/* Subtle dark overlay for text readability */}
+                  <div
+                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.22)' }}
+                    aria-hidden="true"
+                  />
+                </div>
+
+                {/* Card text */}
+                <div
                   style={{
-                    color: accentColor,
-                    fontSize: '10px',
-                    letterSpacing: '3px',
-                    textTransform: 'uppercase',
-                    fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                    fontWeight: 700,
-                    margin: 0,
-                  }}
-                >
-                  {card.lane}
-                </p>
-                <h3
-                  style={{
-                    fontSize: '1.2rem',
-                    color: '#E8DFC8',
-                    margin: 0,
-                    fontFamily: 'var(--font-roboto-slab, serif)',
-                  }}
-                >
-                  {card.heading}
-                </h3>
-                <p
-                  style={{
-                    fontSize: '0.95rem',
-                    color: 'rgba(232,223,200,0.65)',
-                    lineHeight: 1.65,
-                    margin: 0,
+                    padding: '1.75rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.85rem',
                     flex: 1,
-                    fontFamily: 'var(--font-inter, Inter, sans-serif)',
                   }}
                 >
-                  {card.body}
-                </p>
-                <Link
-                  href={card.href}
-                  style={{
-                    color: accentColor,
-                    fontSize: '0.9rem',
-                    fontWeight: 600,
-                    fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                    marginTop: '0.25rem',
-                    transition: 'opacity 0.15s',
-                  }}
-                >
-                  {card.cta}
-                </Link>
+                  <p
+                    style={{
+                      color: card.accentColor,
+                      fontSize: '10px',
+                      letterSpacing: '3px',
+                      textTransform: 'uppercase',
+                      fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                      fontWeight: 700,
+                      margin: 0,
+                    }}
+                  >
+                    {card.lane}
+                  </p>
+                  <h3
+                    style={{
+                      fontSize: '1.35rem',
+                      color: '#E8DFC8',
+                      margin: 0,
+                      fontFamily: 'var(--font-roboto-slab, serif)',
+                      fontWeight: 700,
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {card.heading}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: '0.95rem',
+                      color: 'rgba(232,223,200,0.65)',
+                      lineHeight: 1.65,
+                      margin: 0,
+                      flex: 1,
+                      fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                    }}
+                  >
+                    {card.body}
+                  </p>
+                  <Link
+                    href={card.href}
+                    style={{
+                      color: card.accentColor,
+                      fontSize: '0.9rem',
+                      fontWeight: 600,
+                      fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                      marginTop: '0.25rem',
+                      transition: 'opacity 0.15s',
+                    }}
+                  >
+                    {card.cta}
+                  </Link>
+                </div>
               </div>
-              )
-            })}
+            ))}
           </div>
         </div>
       </section>
@@ -331,12 +433,25 @@ export default async function HomePage() {
                   fontSize: '1rem',
                   color: 'rgba(232,223,200,0.65)',
                   lineHeight: 1.7,
-                  marginBottom: '1.75rem',
+                  marginBottom: '1.25rem',
                   fontFamily: 'var(--font-inter, Inter, sans-serif)',
                 }}
               >
                 Stuff I&apos;d actually use or wear. Garden gear, TUGN characters, and
                 print-on-demand products.
+              </p>
+              <p
+                style={{
+                  color: 'rgba(232,223,200,0.4)',
+                  fontSize: '10px',
+                  letterSpacing: '3px',
+                  textTransform: 'uppercase',
+                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                  fontWeight: 600,
+                  marginBottom: '1rem',
+                }}
+              >
+                Built. Not bought.
               </p>
               <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 <a
@@ -389,7 +504,13 @@ export default async function HomePage() {
 
       {/* ── FEATURED VIDEO (if set in Sanity) ── */}
       {featuredId && (
-        <section style={{ background: '#111827', padding: '5rem 0' }}>
+        <section
+          style={{
+            background: '#111827',
+            padding: '5rem 0',
+            borderTop: '1px solid rgba(255,255,255,0.08)',
+          }}
+        >
           <div className="container" style={{ maxWidth: '860px' }}>
             <h2
               style={{
