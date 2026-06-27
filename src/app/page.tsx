@@ -78,12 +78,11 @@ export default async function HomePage() {
           {/* Logo badge */}
           <div className="hero-logo-wrapper" style={{ marginBottom: '2rem' }}>
             <Image
-              src="/tugn-logo-primary.webp"
+              src="/tugn-logo-transparent.png"
               alt="The Urban Gardening Neighbor"
               fill
               sizes="(max-width: 767px) 180px, (max-width: 1023px) 240px, 300px"
               priority
-              className="hero-logo-img"
               style={{ objectFit: 'contain' }}
             />
           </div>

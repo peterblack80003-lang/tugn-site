@@ -162,10 +162,6 @@ img {
   .hero-logo-wrapper { width: 300px; height: 300px; }
 }
 
-/* screen blend: white pixels vanish on dark bg, colors stay vivid */
-.hero-logo-img {
-  mix-blend-mode: screen;
-}
 
 /* ── Stats bar ── */
 .stats-grid {
