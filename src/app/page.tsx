@@ -75,16 +75,16 @@ export default async function HomePage() {
             margin: '0 auto',
           }}
         >
-          {/* Circular logo badge */}
+          {/* Logo badge */}
           <div className="hero-logo-wrapper" style={{ marginBottom: '2rem' }}>
             <Image
               src="/tugn-logo-primary.webp"
               alt="The Urban Gardening Neighbor"
               fill
-              sizes="(max-width: 767px) 160px, (max-width: 1023px) 200px, 260px"
+              sizes="(max-width: 767px) 180px, (max-width: 1023px) 240px, 300px"
               priority
               className="hero-logo-img"
-              style={{ objectFit: 'cover' }}
+              style={{ objectFit: 'contain' }}
             />
           </div>
 
