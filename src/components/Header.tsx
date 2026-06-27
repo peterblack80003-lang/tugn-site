@@ -10,6 +10,7 @@ const desktopLinks = [
   { href: '/tomato-masterclass', label: 'Masterclass' },
   { href: '/gardening-guides', label: 'Guides' },
   { href: '/zone-5-denver-gardening-guide', label: 'Zone 5 Guide' },
+  { href: '/raised-bed-command-center', label: 'Raised Bed Hub' },
   { href: '/videos', label: 'Videos' },
 ]
 
@@ -18,6 +19,7 @@ const overlayLinks = [
   { href: '/tomato-masterclass', label: 'Masterclass' },
   { href: '/gardening-guides', label: 'Guides' },
   { href: '/zone-5-denver-gardening-guide', label: 'Zone 5 Guide' },
+  { href: '/raised-bed-command-center', label: 'Raised Bed Hub' },
   { href: '/videos', label: 'Videos' },
   { href: '/shop', label: 'Shop' },
   { href: '/gear', label: 'Gear I Use' },
