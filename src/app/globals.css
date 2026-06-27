@@ -138,7 +138,9 @@ img {
 
 /* ── Merch section ── */
 @media (max-width: 767px) {
-  .character-placeholder { display: none; }
+  .character-placeholder {
+    display: none !important;
+  }
 }
 
 /* ── Hero section ── */
