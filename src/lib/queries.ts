@@ -3,7 +3,7 @@ import { client } from './sanity'
 export async function getArticles() {
   return client.fetch(
     `*[_type == "article" && status == "published"] | order(published_at desc) {
-      _id, title, slug, meta_description, published_at, content_lane, series, youtube_video_id
+      _id, title, slug, excerpt, meta_description, published_at, content_lane, series, youtube_video_id, tags
     }`
   )
 }
@@ -11,8 +11,8 @@ export async function getArticles() {
 export async function getArticle(slug: string) {
   return client.fetch(
     `*[_type == "article" && slug.current == $slug && status == "published"][0] {
-      _id, title, slug, seo_title, meta_description, primary_keyword,
-      body, youtube_video_id, content_lane, series, published_at
+      _id, title, slug, seo_title, meta_description, excerpt, primary_keyword,
+      body, youtube_video_id, content_lane, series, published_at, tags
     }`,
     { slug }
   )

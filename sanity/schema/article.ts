@@ -3,12 +3,13 @@ export const article = {
   title: 'Articles',
   type: 'document',
   fields: [
-    { name: 'title', type: 'string', title: 'Title' },
+    { name: 'title', type: 'string', title: 'Title', validation: (R: { required: () => unknown }) => R.required() },
     {
       name: 'slug',
       type: 'slug',
       title: 'Slug',
       options: { source: 'title' },
+      validation: (R: { required: () => unknown }) => R.required(),
     },
     { name: 'seo_title', type: 'string', title: 'SEO Title' },
     {
@@ -17,7 +18,21 @@ export const article = {
       title: 'Meta Description',
       rows: 3,
     },
+    {
+      name: 'excerpt',
+      type: 'text',
+      title: 'Excerpt',
+      description: '2–3 sentence summary shown on article cards and in listings.',
+      rows: 3,
+    },
     { name: 'primary_keyword', type: 'string', title: 'Primary Keyword' },
+    {
+      name: 'tags',
+      type: 'array',
+      title: 'Tags',
+      of: [{ type: 'string' }],
+      options: { layout: 'tags' },
+    },
     {
       name: 'body',
       type: 'array',
