@@ -1,10 +1,14 @@
 import { client } from './sanity'
 
+const revalidate = { next: { revalidate: 60 } }
+
 export async function getArticles() {
   return client.fetch(
     `*[_type == "article" && status == "published"] | order(published_at desc) {
       _id, title, slug, excerpt, meta_description, published_at, content_lane, series, youtube_video_id, tags
-    }`
+    }`,
+    {},
+    revalidate
   )
 }
 
@@ -14,7 +18,8 @@ export async function getArticle(slug: string) {
       _id, title, slug, seo_title, meta_description, excerpt, primary_keyword,
       body, youtube_video_id, content_lane, series, published_at, tags
     }`,
-    { slug }
+    { slug },
+    revalidate
   )
 }
 
@@ -22,12 +27,14 @@ export async function getFeaturedEpisode() {
   return client.fetch(
     `*[_type == "siteSettings"][0] {
       featured_episode_id, featured_episode_title, featured_episode_description
-    }`
+    }`,
+    {},
+    revalidate
   )
 }
 
 export async function getSiteSettings() {
-  return client.fetch(`*[_type == "siteSettings"][0]`)
+  return client.fetch(`*[_type == "siteSettings"][0]`, {}, revalidate)
 }
 
 export async function getSeriesByLane(lane: string) {
@@ -35,7 +42,8 @@ export async function getSeriesByLane(lane: string) {
     `*[_type == "series" && lane == $lane] | order(name asc) {
       _id, name, slug, description, episode_count, lane
     }`,
-    { lane }
+    { lane },
+    revalidate
   )
 }
 
@@ -44,7 +52,8 @@ export async function getRecentEpisodes(limit: number = 6) {
     `*[_type == "episode"] | order(published_at desc) [0...$limit] {
       _id, title, youtube_id, description, series, lane, published_at, thumbnail_url
     }`,
-    { limit }
+    { limit },
+    revalidate
   )
 }
 
@@ -53,7 +62,8 @@ export async function getEpisodesBySeries(seriesName: string) {
     `*[_type == "episode" && series == $seriesName] | order(published_at asc) {
       _id, title, youtube_id, description, published_at, thumbnail_url
     }`,
-    { seriesName }
+    { seriesName },
+    revalidate
   )
 }
 
@@ -64,7 +74,9 @@ export async function getZoneGuide() {
       plantingCalendar[] { _key, month, sowIndoors, transplant, directSow, notes },
       denverSpecificTips[] { _key, heading, body },
       relatedVideos
-    }`
+    }`,
+    {},
+    revalidate
   )
 }
 
@@ -78,7 +90,9 @@ export async function getRaisedBedHub() {
       },
       featuredTopics[] { _key, topicTitle, topicDescription, topicIcon, linkUrl },
       relatedVideos
-    }`
+    }`,
+    {},
+    revalidate
   )
 }
 
@@ -86,7 +100,9 @@ export async function getVideoArticles() {
   return client.fetch(
     `*[_type == "videoArticle" && status == "published"] | order(publishedAt desc) {
       _id, title, slug, youtubeVideoId, publishedAt, excerpt, contentLane, tags
-    }`
+    }`,
+    {},
+    revalidate
   )
 }
 
@@ -95,7 +111,8 @@ export async function getVideoArticle(slug: string) {
     `*[_type == "videoArticle" && slug.current == $slug && status == "published"][0] {
       _id, title, slug, youtubeVideoId, publishedAt, thumbnail, excerpt, articleBody, contentLane, tags
     }`,
-    { slug }
+    { slug },
+    revalidate
   )
 }
 
@@ -107,6 +124,6 @@ export async function getTomatoSymptoms() {
       "infographicUrl": infographic.asset->url
     }`,
     {},
-    { next: { revalidate: 60 } }
+    revalidate
   )
 }
