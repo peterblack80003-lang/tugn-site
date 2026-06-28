@@ -183,6 +183,13 @@ export default function Footer() {
             }}
           >
             © 2026 The Urban Gardening Neighbor · Red Polo Media LLC
+            {' · '}
+            <Link
+              href="/privacy-policy"
+              style={{ color: 'rgba(232,223,200,0.3)', textDecoration: 'underline', textDecorationColor: 'rgba(232,223,200,0.15)' }}
+            >
+              Privacy Policy
+            </Link>
           </span>
           <span
             style={{
