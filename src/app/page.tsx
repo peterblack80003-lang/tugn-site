@@ -28,7 +28,7 @@ const seriesCards = [
     href: '/gardening-guides',
     secondaryCta: 'Build your system →',
     secondaryHref: '/raised-bed-command-center',
-    image: '/garden-wide-16x9.webp?v=1',
+    image: '/garden-wide-16x9.webp',
     imageAlt: 'Raised garden beds with thriving vegetables',
   },
   {
@@ -41,7 +41,7 @@ const seriesCards = [
     href: '/videos',
     secondaryCta: null,
     secondaryHref: null,
-    image: '/fix-it-tomato.webp?v=1',
+    image: '/fix-it-tomato.webp',
     imageAlt: 'Tomato plant showing signs of stress',
   },
 ]

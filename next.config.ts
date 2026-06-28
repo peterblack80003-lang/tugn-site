@@ -16,6 +16,13 @@ const nextConfig: NextConfig = {
         hostname: 'cdn.sanity.io',
       },
     ],
+    localPatterns: [
+      {
+        pathname: '/**',
+        search: '',
+      },
+    ],
+    minimumCacheTTL: 0,
   },
 };
 
