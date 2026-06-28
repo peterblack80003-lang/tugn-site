@@ -1,142 +1,95 @@
 import type { Metadata } from 'next'
+import { getVideoArticles } from '@/lib/queries'
+import VideoLibraryGrid from '@/components/VideoLibraryGrid'
 
 export const metadata: Metadata = {
-  title: 'Videos',
+  title: 'Video Library — The Urban Gardening Neighbor',
   description:
-    'Watch all TUGN episodes on YouTube — tomatoes, soil, systems, and problem solving from Zone 5b Denver.',
+    'Watch-and-read companion articles for every TUGN episode. Zone 5b Denver gardening — tomatoes, soil, systems, and problem solving.',
 }
 
-const CHANNEL_URL = 'https://youtube.com/@theurbangardeningneighbor'
-const CHANNEL_ID = 'UCg30BKGYJPyTzeVJmBmHnLg'
+export default async function VideosPage() {
+  const videos = await getVideoArticles().catch(() => [])
 
-const placeholderVideos = [
-  { id: 1, label: 'Episode 1' },
-  { id: 2, label: 'Episode 2' },
-  { id: 3, label: 'Episode 3' },
-  { id: 4, label: 'Episode 4' },
-  { id: 5, label: 'Episode 5' },
-  { id: 6, label: 'Episode 6' },
-]
-
-export default function VideosPage() {
   return (
     <>
-      {/* Hero */}
+      {/* ── HERO ── */}
       <section
         style={{
-          background: 'linear-gradient(135deg, #111b29 0%, #1A2535 100%)',
-          paddingTop: '120px',
-          paddingBottom: '50px',
+          background: '#1A2535',
+          borderBottom: '1px solid #4A8C2A',
+          padding: 'clamp(40px, 7vw, 64px) 1.5rem',
         }}
       >
-        <div className="container" style={{ maxWidth: '720px' }}>
+        <div className="container" style={{ maxWidth: '760px' }}>
           <h1
             style={{
-              fontSize: 'clamp(1.8rem, 4vw, 2.75rem)',
+              fontFamily: 'var(--font-roboto-slab, serif)',
+              fontSize: 'clamp(2rem, 5vw, 3.2rem)',
+              lineHeight: 1.1,
               color: '#E8DFC8',
-              marginBottom: '0.75rem',
+              fontWeight: 700,
+              marginBottom: '1rem',
             }}
           >
-            Videos
+            Video Library
           </h1>
           <p
-            style={{ fontSize: '1.05rem', color: 'rgba(232,223,200,0.65)', lineHeight: 1.7 }}
+            style={{
+              fontFamily: 'var(--font-inter, Inter, sans-serif)',
+              fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
+              color: 'rgba(232,223,200,0.7)',
+              lineHeight: 1.7,
+              maxWidth: '520px',
+              margin: 0,
+            }}
           >
-            Every episode on one page. New videos drop with the growing season —
-            subscribe so you don&apos;t miss the next one.
+            Every episode, organized by series. Watch, read, or both.
           </p>
         </div>
       </section>
 
-      {/* Channel CTA */}
-      <section style={{ background: 'var(--surface)', padding: '3rem 0', borderBottom: '1px solid var(--border)' }}>
-        <div className="container" style={{ textAlign: 'center', maxWidth: '600px' }}>
-          <p style={{ color: 'rgba(232,223,200,0.65)', marginBottom: '1.25rem', fontSize: '1rem' }}>
-            Watch all episodes — and subscribe for new uploads every season.
+      {/* ── FILTER + GRID (client component) ── */}
+      <VideoLibraryGrid videos={videos} />
+
+      {/* ── CTA ── */}
+      <section
+        style={{
+          background: '#1a3a1a',
+          borderTop: '1px solid rgba(74,140,42,0.25)',
+          padding: '5rem 0',
+        }}
+      >
+        <div className="container" style={{ maxWidth: '560px', textAlign: 'center' }}>
+          <h2
+            style={{
+              fontSize: 'clamp(1.4rem, 3vw, 1.9rem)',
+              color: '#E8DFC8',
+              marginBottom: '0.85rem',
+              fontFamily: 'var(--font-roboto-slab, serif)',
+            }}
+          >
+            New videos drop every season.
+          </h2>
+          <p
+            style={{
+              fontSize: '1rem',
+              color: 'rgba(232,223,200,0.65)',
+              lineHeight: 1.7,
+              fontFamily: 'var(--font-inter, Inter, sans-serif)',
+              marginBottom: '2rem',
+            }}
+          >
+            Subscribe on YouTube for weekly Zone 5b Denver gardening content.
           </p>
           <a
-            href={CHANNEL_URL}
+            href="https://youtube.com/@theurbangardeningneighbor"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-green"
-            style={{ fontSize: '1rem' }}
           >
-            Watch All Episodes on YouTube →
+            Subscribe on YouTube
           </a>
-        </div>
-      </section>
-
-      {/* Channel embed */}
-      <section style={{ background: 'var(--bg)', padding: '4rem 0' }}>
-        <div className="container" style={{ maxWidth: '960px' }}>
-          <h2 style={{ fontSize: '1.4rem', color: '#E8DFC8', marginBottom: '1.5rem' }}>
-            Latest Episodes
-          </h2>
-          <p style={{ color: 'rgba(232,223,200,0.4)', fontSize: '0.85rem', marginBottom: '2rem' }}>
-            Dynamic video feed added in Session 8 (YouTube Data API). For now, watch directly on the channel.
-          </p>
-
-          {/* Placeholder grid */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-              gap: '1.25rem',
-            }}
-          >
-            {placeholderVideos.map((v) => (
-              <a
-                key={v.id}
-                href={CHANNEL_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'block',
-                  background: 'var(--surface)',
-                  border: '1px solid var(--border)',
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  textDecoration: 'none',
-                }}
-              >
-                <div
-                  style={{
-                    background: 'rgba(0,0,0,0.4)',
-                    aspectRatio: '16/9',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <svg width="40" height="40" viewBox="0 0 24 24" fill="rgba(255,255,255,0.2)">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-                <div style={{ padding: '1rem' }}>
-                  <p
-                    style={{
-                      color: 'rgba(232,223,200,0.35)',
-                      fontSize: '0.85rem',
-                      fontStyle: 'italic',
-                    }}
-                  >
-                    {v.label} — coming soon
-                  </p>
-                </div>
-              </a>
-            ))}
-          </div>
-
-          <div style={{ textAlign: 'center', marginTop: '3rem' }}>
-            <a
-              href={`https://www.youtube.com/channel/${CHANNEL_ID}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-outline"
-            >
-              View Full Channel →
-            </a>
-          </div>
         </div>
       </section>
     </>

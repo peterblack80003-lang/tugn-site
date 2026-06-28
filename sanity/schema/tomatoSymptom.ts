@@ -1,0 +1,70 @@
+export const tomatoSymptom = {
+  name: 'tomatoSymptom',
+  title: 'Tomato Symptom',
+  type: 'document',
+  fields: [
+    {
+      name: 'symptomName',
+      type: 'string',
+      title: 'Symptom Name',
+      validation: (R: { required: () => unknown }) => R.required(),
+    },
+    {
+      name: 'category',
+      type: 'string',
+      title: 'Category',
+      options: { list: ['Leaves', 'Fruit', 'Roots', 'Stems', 'Growth', 'Pests'] },
+      validation: (R: { required: () => unknown }) => R.required(),
+    },
+    {
+      name: 'shortDescription',
+      type: 'string',
+      title: 'Short Description',
+      description: 'One sentence — shown in the symptom grid card.',
+      validation: (R: { required: () => unknown }) => R.required(),
+    },
+    {
+      name: 'diagnosis',
+      type: 'array',
+      title: 'Diagnosis',
+      description: 'Detailed explanation of what is happening and why.',
+      of: [{ type: 'block' }],
+    },
+    {
+      name: 'solution',
+      type: 'array',
+      title: 'Solution',
+      description: 'Step-by-step fix.',
+      of: [{ type: 'block' }],
+    },
+    {
+      name: 'preventionTip',
+      type: 'string',
+      title: 'Prevention Tip',
+      description: 'One concise prevention tip.',
+    },
+    {
+      name: 'infographic',
+      type: 'image',
+      title: 'Infographic',
+      description: 'Optional visual aid — placeholder for now.',
+      options: { hotspot: true },
+    },
+    {
+      name: 'relatedVideo',
+      type: 'string',
+      title: 'Related Video URL',
+      description: 'Optional YouTube URL — placeholder for now.',
+    },
+    {
+      name: 'severity',
+      type: 'string',
+      title: 'Severity',
+      options: { list: ['Low', 'Medium', 'High'] },
+      initialValue: 'Medium',
+    },
+  ],
+  preview: {
+    select: { title: 'symptomName', subtitle: 'category' },
+  },
+}

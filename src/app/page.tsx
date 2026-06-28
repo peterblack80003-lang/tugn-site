@@ -13,6 +13,8 @@ const seriesCards = [
     body: 'Timing, varieties, soil, water, pruning, harvest. Zone 5b specific. No filler.',
     cta: 'Watch the series →',
     href: '/tomato-masterclass',
+    secondaryCta: 'Solve a tomato problem →',
+    secondaryHref: '/tomato-problem-solver',
     image: 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?w=800&q=80',
     imageAlt: 'Ripe red tomatoes growing on the vine',
   },
@@ -24,7 +26,9 @@ const seriesCards = [
     body: 'The infrastructure decisions that determine whether your garden works or doesn\'t.',
     cta: 'Build the system →',
     href: '/gardening-guides',
-    image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80',
+    secondaryCta: 'Build your system →',
+    secondaryHref: '/raised-bed-command-center',
+    image: '/garden-wide-16x9.webp?v=1',
     imageAlt: 'Raised garden beds with thriving vegetables',
   },
   {
@@ -35,8 +39,10 @@ const seriesCards = [
     body: 'Problem-first videos for when the plants aren\'t cooperating and you need answers.',
     cta: 'Find the fix →',
     href: '/videos',
-    image: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=800&q=80',
-    imageAlt: 'Gardener tending to plants in a raised bed',
+    secondaryCta: null,
+    secondaryHref: null,
+    image: '/fix-it-tomato.webp?v=1',
+    imageAlt: 'Tomato plant showing signs of stress',
   },
 ]
 
@@ -147,11 +153,11 @@ export default async function HomePage() {
               flexWrap: 'wrap',
             }}
           >
-            <Link href="/tomato-masterclass" className="btn-green">
-              Watch the Series
+            <Link href="/zone-5-denver-gardening-guide" className="btn-green">
+              Start Here →
             </Link>
-            <Link href="/zone-5-denver-gardening-guide" className="btn-outline">
-              Start Here
+            <Link href="/videos" className="btn-outline">
+              Watch Videos →
             </Link>
           </div>
         </div>
@@ -310,13 +316,14 @@ export default async function HomePage() {
                 }}
               >
                 {/* Card image — 16:9 */}
-                <div style={{ position: 'relative', aspectRatio: '16 / 9' }}>
+                <div style={{ position: 'relative', aspectRatio: '16 / 9', overflow: 'hidden' }}>
                   <Image
                     src={card.image}
                     alt={card.imageAlt}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    style={{ objectFit: 'cover' }}
+                    width={800}
+                    height={450}
+                    priority
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                   />
                   {/* Subtle dark overlay for text readability */}
                   <div
@@ -372,19 +379,34 @@ export default async function HomePage() {
                   >
                     {card.body}
                   </p>
-                  <Link
-                    href={card.href}
-                    style={{
-                      color: card.accentColor,
-                      fontSize: '0.9rem',
-                      fontWeight: 600,
-                      fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                      marginTop: '0.25rem',
-                      transition: 'opacity 0.15s',
-                    }}
-                  >
-                    {card.cta}
-                  </Link>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.25rem' }}>
+                    <Link
+                      href={card.href}
+                      style={{
+                        color: card.accentColor,
+                        fontSize: '0.9rem',
+                        fontWeight: 600,
+                        fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                      }}
+                    >
+                      {card.cta}
+                    </Link>
+                    {card.secondaryCta && card.secondaryHref && (
+                      <Link
+                        href={card.secondaryHref}
+                        style={{
+                          color: 'rgba(232,223,200,0.45)',
+                          fontSize: '0.8rem',
+                          fontWeight: 400,
+                          fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                          textDecoration: 'underline',
+                          textDecorationColor: 'rgba(232,223,200,0.2)',
+                        }}
+                      >
+                        {card.secondaryCta}
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

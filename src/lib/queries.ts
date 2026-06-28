@@ -56,3 +56,55 @@ export async function getEpisodesBySeries(seriesName: string) {
     { seriesName }
   )
 }
+
+export async function getZoneGuide() {
+  return client.fetch(
+    `*[_type == "zoneGuide"][0] {
+      _id, title, intro, lastFrostDate, firstFrostDate, growingSeasonLength,
+      plantingCalendar[] { _key, month, sowIndoors, transplant, directSow, notes },
+      denverSpecificTips[] { _key, heading, body },
+      relatedVideos
+    }`
+  )
+}
+
+export async function getRaisedBedHub() {
+  return client.fetch(
+    `*[_type == "raisedBedHub"][0] {
+      _id, title, intro,
+      hubSections[] {
+        _key, sectionTitle, sectionBody,
+        relatedLinks[] { _key, linkLabel, linkUrl }
+      },
+      featuredTopics[] { _key, topicTitle, topicDescription, topicIcon, linkUrl },
+      relatedVideos
+    }`
+  )
+}
+
+export async function getVideoArticles() {
+  return client.fetch(
+    `*[_type == "videoArticle" && status == "published"] | order(publishedAt desc) {
+      _id, title, slug, youtubeVideoId, publishedAt, excerpt, contentLane, tags
+    }`
+  )
+}
+
+export async function getVideoArticle(slug: string) {
+  return client.fetch(
+    `*[_type == "videoArticle" && slug.current == $slug && status == "published"][0] {
+      _id, title, slug, youtubeVideoId, publishedAt, thumbnail, excerpt, articleBody, contentLane, tags
+    }`,
+    { slug }
+  )
+}
+
+export async function getTomatoSymptoms() {
+  return client.fetch(
+    `*[_type == "tomatoSymptom"] | order(category asc, symptomName asc) {
+      _id, symptomName, category, shortDescription,
+      diagnosis, solution, preventionTip, relatedVideo, severity,
+      "infographicUrl": infographic.asset->url
+    }`
+  )
+}

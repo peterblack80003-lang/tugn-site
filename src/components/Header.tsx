@@ -5,10 +5,16 @@ import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { client } from '@/lib/sanity'
 
+const growItems = [
+  { href: '/zone-5-denver-gardening-guide', label: 'Zone 5 Denver Guide' },
+  { href: '/raised-bed-command-center', label: 'Raised Bed Command Center' },
+  { href: '/tomato-problem-solver', label: 'Tomato Problem Solver' },
+]
+
 const desktopLinks = [
   { href: 'https://youtube.com/@theurbangardeningneighbor', label: 'Videos', external: true },
   { href: '/articles', label: 'Articles', external: false },
-  { href: '/zone-5-denver-gardening-guide', label: 'Start Here', external: false },
+  { href: '/zone-5-denver-gardening-guide', label: 'Start Here', external: false, isStartHere: true },
   { href: '/shop', label: 'Shop', external: false },
 ]
 
@@ -44,7 +50,10 @@ export default function Header() {
   const pathname = usePathname()
   const isHome = pathname === '/'
   const [menuOpen, setMenuOpen] = useState(false)
+  const [growOpen, setGrowOpen] = useState(false)
   const [bannerText, setBannerText] = useState<string | null>(null)
+
+  const isGrowActive = growItems.some(({ href }) => pathname.startsWith(href))
 
   useEffect(() => {
     if (!isHome) return
@@ -112,24 +121,131 @@ export default function Header() {
 
           {/* Right side: desktop links + hamburger */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+
             {/* Desktop nav — hidden on mobile */}
             <ul
               className="hidden md:flex"
               style={{ listStyle: 'none', margin: 0, padding: 0, alignItems: 'center', gap: '0.1rem' }}
             >
-              {desktopLinks.map(({ href, label, external }) => {
+              {/* ── GROW DROPDOWN ── */}
+              <li
+                style={{ position: 'relative' }}
+                onMouseEnter={() => setGrowOpen(true)}
+                onMouseLeave={() => setGrowOpen(false)}
+              >
+                <button
+                  aria-haspopup="true"
+                  aria-expanded={growOpen}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.3rem',
+                    padding: '0.4rem 0.7rem',
+                    fontSize: '0.875rem',
+                    fontWeight: isGrowActive ? 600 : 400,
+                    color: isGrowActive ? '#4A8C2A' : 'rgba(232,223,200,0.75)',
+                    borderBottom: isGrowActive ? '2px solid #4A8C2A' : '2px solid transparent',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                    transition: 'color 0.15s',
+                  }}
+                >
+                  Grow
+                  <svg
+                    width="10"
+                    height="6"
+                    viewBox="0 0 10 6"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    style={{
+                      transform: growOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.15s',
+                    }}
+                  >
+                    <path d="M1 1l4 4 4-4" />
+                  </svg>
+                </button>
+
+                {/* Dropdown panel — always in DOM, toggled via opacity */}
+                <div
+                  role="menu"
+                  style={{
+                    position: 'absolute',
+                    top: 'calc(100% + 1px)',
+                    left: 0,
+                    minWidth: '236px',
+                    background: '#111827',
+                    border: '1px solid rgba(232,223,200,0.08)',
+                    borderTop: '2px solid #4A8C2A',
+                    borderRadius: '0 4px 8px 8px',
+                    boxShadow: '0 12px 32px rgba(0,0,0,0.5)',
+                    padding: '0.4rem 0',
+                    opacity: growOpen ? 1 : 0,
+                    transform: growOpen ? 'translateY(0)' : 'translateY(-6px)',
+                    pointerEvents: growOpen ? 'auto' : 'none',
+                    transition: 'opacity 0.15s ease, transform 0.15s ease',
+                  }}
+                >
+                  {growItems.map(({ href, label }) => {
+                    const active = pathname.startsWith(href)
+                    return (
+                      <Link
+                        key={href}
+                        href={href}
+                        role="menuitem"
+                        onClick={() => setGrowOpen(false)}
+                        style={{
+                          display: 'block',
+                          padding: '0.65rem 1.1rem',
+                          fontSize: '0.84rem',
+                          color: active ? '#4A8C2A' : 'rgba(232,223,200,0.82)',
+                          fontWeight: active ? 600 : 400,
+                          borderLeft: active ? '2px solid #4A8C2A' : '2px solid transparent',
+                          fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                          transition: 'color 0.1s, border-color 0.1s',
+                        }}
+                      >
+                        {label}
+                      </Link>
+                    )
+                  })}
+                </div>
+              </li>
+
+              {/* ── OTHER DESKTOP LINKS ── */}
+              {desktopLinks.map(({ href, label, external, isStartHere }) => {
                 const active = !external && (pathname === href || (pathname.startsWith(href) && href !== '/'))
-                const linkStyle = {
-                  display: 'block',
-                  padding: '0.4rem 0.7rem',
-                  fontSize: '0.875rem',
-                  fontWeight: active ? 600 : 400,
-                  color: active ? '#4A8C2A' : 'rgba(232,223,200,0.75)',
-                  borderBottom: active ? '2px solid #4A8C2A' : '2px solid transparent',
-                  transition: 'color 0.15s',
-                  whiteSpace: 'nowrap' as const,
-                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                }
+
+                const linkStyle = isStartHere
+                  ? {
+                      display: 'block',
+                      padding: '0.4rem 0.7rem',
+                      fontSize: '0.875rem',
+                      fontWeight: 700,
+                      color: '#D4601A',
+                      borderBottom: '2px solid rgba(212,96,26,0.4)',
+                      whiteSpace: 'nowrap' as const,
+                      fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                      letterSpacing: '0.01em',
+                    }
+                  : {
+                      display: 'block',
+                      padding: '0.4rem 0.7rem',
+                      fontSize: '0.875rem',
+                      fontWeight: active ? 600 : 400,
+                      color: active ? '#4A8C2A' : 'rgba(232,223,200,0.75)',
+                      borderBottom: active ? '2px solid #4A8C2A' : '2px solid transparent',
+                      transition: 'color 0.15s',
+                      whiteSpace: 'nowrap' as const,
+                      fontFamily: 'var(--font-inter, Inter, sans-serif)',
+                    }
+
                 return (
                   <li key={href}>
                     {external ? (
