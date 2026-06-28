@@ -105,6 +105,8 @@ export async function getTomatoSymptoms() {
       _id, symptomName, category, shortDescription,
       diagnosis, solution, preventionTip, relatedVideo, severity,
       "infographicUrl": infographic.asset->url
-    }`
+    }`,
+    {},
+    { next: { revalidate: 60 } }
   )
 }
