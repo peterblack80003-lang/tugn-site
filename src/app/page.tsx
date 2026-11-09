@@ -1,593 +1,464 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { getChannelVideos } from '@/lib/youtube'
+import { getArticles, getEpisodesBySeries, getSiteSettings } from '@/lib/queries'
 import StatsBar from '@/components/StatsBar'
-import VideoCard from '@/components/VideoCard'
+import NewsletterForm from '@/components/NewsletterForm'
 
-const seriesCards = [
-  {
-    lane: 'Tomato Masterclass',
-    accentColor: '#D4601A',
-    borderColor: '#D4601A',
-    heading: 'Six episodes. Start to harvest.',
-    body: 'Timing, varieties, soil, water, pruning, harvest. Zone 5b specific. No filler.',
-    cta: 'Watch the series →',
-    href: '/tomato-masterclass',
-    secondaryCta: 'Solve a tomato problem →',
-    secondaryHref: '/tomato-problem-solver',
-    image: 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?w=800&q=80',
-    imageAlt: 'Ripe red tomatoes growing on the vine',
-  },
-  {
-    lane: 'Garden Systems',
-    accentColor: '#4A8C2A',
-    borderColor: '#4A8C2A',
-    heading: 'Beds, soil, water, drip.',
-    body: 'The infrastructure decisions that determine whether your garden works or doesn\'t.',
-    cta: 'Build the system →',
-    href: '/gardening-guides',
-    secondaryCta: 'Build your system →',
-    secondaryHref: '/raised-bed-command-center',
-    image: '/garden-wide-16x9.webp',
-    imageAlt: 'Raised garden beds with thriving vegetables',
-  },
-  {
-    lane: 'FIX IT',
-    accentColor: '#8B5E3C',
-    borderColor: '#8B5E3C',
-    heading: 'Something\'s wrong. Let\'s fix it.',
-    body: 'Problem-first videos for when the plants aren\'t cooperating and you need answers.',
-    cta: 'Find the fix →',
-    href: '/videos',
-    secondaryCta: null,
-    secondaryHref: null,
-    image: '/fix-it-tomato.webp',
-    imageAlt: 'Tomato plant showing signs of stress',
-  },
-]
+const YT_URL = 'https://youtube.com/@theurbangardeningneighbor'
+const CHANNEL_ID = process.env.YOUTUBE_CHANNEL_ID || 'UCg30BKGYJPyTzeVJmBmHnLg'
+
+function Arrow() {
+  return (
+    <svg
+      aria-hidden="true"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
+  )
+}
+
+type Pillar = {
+  lane: string
+  heading: string
+  body: string
+  cta: string
+  href: string
+  color: string
+  textColor: string
+  image: string
+  imageAlt: string
+}
+
+type ZoneNow = {
+  label: string
+  headline: string
+  body: string
+  ctaText: string
+  ctaUrl: string
+  secondaryText?: string
+  secondaryUrl?: string
+}
+
+// Fallback when the CMS card is empty. Written for Zone 5 in November.
+const ZONE_NOW_DEFAULT: ZoneNow = {
+  label: 'Week of Nov 8',
+  headline: 'First hard frost is behind us. Winterize the drip before the ground locks up.',
+  body:
+    'Pull the emitter lines, blow out or drain the manifold, and get leaves or straw on the beds. Fifteen minutes now saves you a cracked timer and a spring full of surprises.',
+  ctaText: 'Winterizing checklist',
+  ctaUrl: '/raised-bed-command-center',
+  secondaryText: 'What to do in December →',
+  secondaryUrl: '/zone-5-denver-gardening-guide',
+}
+
+function laneFor(title: string): { label: string; color: string } {
+  const t = title.toLowerCase()
+  if (/crack|curl|fall|drop|wrong|problem|fix|yellow|blight|pest/.test(t)) return { label: 'Fix It', color: 'var(--fn-tomato)' }
+  if (/tomato/.test(t)) return { label: 'Tomatoes', color: 'var(--fn-tomato)' }
+  if (/bed|soil|drip|water|compost|coir|biochar|system/.test(t)) return { label: 'Systems', color: 'var(--fn-rust-text)' }
+  return { label: 'Beginners', color: 'var(--fn-green)' }
+}
 
 export default async function HomePage() {
-  const latestVideos = await getChannelVideos('UCg30BKGYJPyTzeVJmBmHnLg', 3)
+  const [latestVideos, articles, fixItEpisodes, settings] = await Promise.all([
+    getChannelVideos(CHANNEL_ID, 3),
+    getArticles().catch(() => [] as unknown[]),
+    getEpisodesBySeries('Fix It').catch(() => [] as Array<{ youtube_id?: string }>),
+    getSiteSettings().catch(() => null),
+  ])
+
+  const articleCount = Array.isArray(articles) ? articles.length : 0
+
+  // Most recent Fix It episode when the CMS has one; otherwise the flagship diagnosis video.
+  const fixItThumb =
+    fixItEpisodes?.[0]?.youtube_id
+      ? `https://img.youtube.com/vi/${fixItEpisodes[0].youtube_id}/hqdefault.jpg`
+      : 'https://img.youtube.com/vi/j2OYG6gZo6M/hqdefault.jpg'
+
+  const zoneNow: ZoneNow =
+    settings?.zone_now_headline && settings?.zone_now_body
+      ? {
+          label: settings.zone_now_label || '',
+          headline: settings.zone_now_headline,
+          body: settings.zone_now_body,
+          ctaText: settings.zone_now_cta_text || ZONE_NOW_DEFAULT.ctaText,
+          ctaUrl: settings.zone_now_cta_url || ZONE_NOW_DEFAULT.ctaUrl,
+          secondaryText: settings.zone_now_secondary_text || undefined,
+          secondaryUrl: settings.zone_now_secondary_url || undefined,
+        }
+      : ZONE_NOW_DEFAULT
+
+  const pillars: Pillar[] = [
+    {
+      lane: 'Tomato Masterclass',
+      heading: 'Six episodes. Start to harvest.',
+      body: 'Timing, varieties, soil, water, pruning, harvest. Zone 5b specific. No filler.',
+      cta: 'Watch the series',
+      href: '/tomato-masterclass',
+      color: 'var(--fn-tomato)',
+      textColor: 'var(--fn-tomato)',
+      image: '/fix-it-tomato.webp',
+      imageAlt: 'Tomato plant in a cedar raised bed',
+    },
+    {
+      lane: 'Garden Systems',
+      heading: 'Beds, soil, water, drip.',
+      body: 'The infrastructure decisions that determine whether your garden works or doesn’t.',
+      cta: 'Build the system',
+      href: '/raised-bed-command-center',
+      color: 'var(--fn-rust)',
+      textColor: 'var(--fn-rust-text)',
+      image: '/garden-wide-full.webp',
+      imageAlt: 'Cedar raised beds with drip lines in a backyard garden',
+    },
+    {
+      lane: 'Fix It',
+      heading: 'Something’s wrong. Let’s fix it.',
+      body: 'Problem-first videos for when the plants aren’t cooperating and you need an answer today.',
+      cta: 'Find the fix',
+      href: '/tomato-problem-solver',
+      color: 'var(--fn-slate)',
+      textColor: 'var(--fn-slate-text)',
+      image: fixItThumb,
+      imageAlt: 'Fix It episode: Tomato Problems Are Not Random',
+    },
+    {
+      lane: 'Gardening for Beginners',
+      heading: 'Your first bed, done right.',
+      body: 'The mistakes I made so you can skip them. Soil, timing, water, and what to plant first in Zone 5.',
+      cta: 'Begin here',
+      href: '/zone-5-denver-gardening-guide',
+      color: 'var(--fn-green)',
+      textColor: 'var(--fn-green)',
+      image: '/background.webp',
+      imageAlt: 'Raised beds along a stucco wall at golden hour',
+    },
+  ]
 
   return (
-    <>
+    <div className="fn-page">
       {/* ── HERO ── */}
-      <section
-        className="hero-section"
-        style={{
-          position: 'relative',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundImage: 'url(/background.webp)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundColor: '#111827',
-        }}
-      >
-        {/* Dark overlay */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background: 'rgba(17,24,39,0.60)',
-          }}
-          aria-hidden="true"
+      <section className="fn-hero" aria-label="Introduction">
+        <Image
+          src="/background.webp"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="fn-hero-bg"
+          style={{ objectFit: 'cover', objectPosition: 'center 60%' }}
         />
+        <div className="fn-hero-scrim-x" aria-hidden="true" />
+        <div className="fn-hero-scrim-y" aria-hidden="true" />
 
-        {/* Hero content */}
-        <div
-          style={{
-            position: 'relative',
-            zIndex: 1,
-            textAlign: 'center',
-            padding: '80px 1.5rem 5rem',
-            width: '100%',
-            maxWidth: '720px',
-            margin: '0 auto',
-          }}
-        >
-          {/* Logo badge */}
-          <div className="hero-logo-wrapper" style={{ marginBottom: '2rem' }}>
-            <Image
-              src="/tugn-logo-transparent.png"
-              alt="The Urban Gardening Neighbor"
-              fill
-              sizes="(max-width: 767px) 180px, (max-width: 1023px) 240px, 300px"
-              priority
-              style={{ objectFit: 'contain' }}
-            />
-          </div>
-
-          {/* Eyebrow */}
-          <p
-            style={{
-              color: '#4A8C2A',
-              fontSize: '11px',
-              letterSpacing: '4px',
-              textTransform: 'uppercase',
-              fontFamily: 'var(--font-inter, Inter, sans-serif)',
-              marginBottom: '1.1rem',
-              fontWeight: 600,
-            }}
-          >
-            Zone 5b · Denver
-          </p>
-
-          {/* H1 */}
-          <h1
-            style={{
-              fontSize: 'clamp(3rem, 7vw, 4.5rem)',
-              lineHeight: 1.05,
-              marginBottom: '1.25rem',
-              fontFamily: 'var(--font-roboto-slab, serif)',
-              fontWeight: 900,
-            }}
-          >
-            <span style={{ color: '#E8DFC8' }}>Built.</span>
-            <br />
-            <span style={{ color: '#4A8C2A' }}>Not bought.</span>
-          </h1>
-
-          {/* Subheadline */}
-          <p
-            style={{
-              fontSize: '1.05rem',
-              color: 'rgba(232,223,200,0.8)',
-              lineHeight: 1.7,
-              maxWidth: '540px',
-              margin: '0 auto 2.25rem',
-              fontFamily: 'var(--font-inter, Inter, sans-serif)',
-            }}
-          >
-            Zone 5b raised beds, drip systems, and tomatoes that actually produce.
-            Fifty videos of what I tested, what failed, and what I&apos;d do again.
-          </p>
-
-          {/* CTA buttons */}
-          <div
-            style={{
-              display: 'flex',
-              gap: '1rem',
-              justifyContent: 'center',
-              flexWrap: 'wrap',
-            }}
-          >
-            <Link href="/zone-5-denver-gardening-guide" className="btn-green">
-              Start Here →
-            </Link>
-            <Link href="/videos" className="btn-outline">
-              Watch Videos →
-            </Link>
-          </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '2rem',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.4rem',
-            opacity: 0.4,
-          }}
-          aria-hidden="true"
-        >
-          <span
-            style={{
-              fontSize: '10px',
-              letterSpacing: '2px',
-              textTransform: 'uppercase',
-              fontFamily: 'var(--font-inter, Inter, sans-serif)',
-              color: '#E8DFC8',
-            }}
-          >
-            Scroll
-          </span>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="#E8DFC8">
-            <path d="M8 3v10M4 9l4 4 4-4" stroke="#E8DFC8" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </div>
-      </section>
-
-      {/* ── STATS BAR ── */}
-      <StatsBar />
-
-      {/* ── START HERE ENTRY POINT ── */}
-      <section
-        style={{
-          background: '#111827',
-          padding: '3rem 0',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
-        }}
-      >
-        <div className="container">
-          <div
-            style={{
-              background: '#1a2535',
-              borderLeft: '4px solid #4A8C2A',
-              borderRadius: '0 8px 8px 0',
-              padding: '2rem 2rem 2rem 2rem',
-              maxWidth: '700px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.85rem',
-            }}
-          >
-            <p
-              style={{
-                color: '#4A8C2A',
-                fontSize: '11px',
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-                fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                fontWeight: 600,
-                margin: 0,
-              }}
-            >
-              New to the channel?
+        <div className="fn-container fn-hero-inner">
+          <div className="fn-hero-copy">
+            <span className="fn-hero-kicker">Zone 5b · Denver · Raised beds</span>
+            <h1>
+              Built.
+              <br />
+              <span>Not bought.</span>
+            </h1>
+            <p className="fn-hero-lede">
+              Raised beds, drip systems, and tomatoes that actually produce on the Front Range. Fifty
+              videos of what I tested, what failed, and what I’d do again.
             </p>
-            <h2
-              style={{
-                fontSize: 'clamp(1.25rem, 2.5vw, 1.55rem)',
-                color: '#E8DFC8',
-                margin: 0,
-                fontFamily: 'var(--font-roboto-slab, serif)',
-                fontWeight: 700,
-                lineHeight: 1.2,
-              }}
-            >
-              Start with the Zone 5b Denver Guide
-            </h2>
-            <p
-              style={{
-                fontSize: '0.95rem',
-                color: 'rgba(232,223,200,0.7)',
-                lineHeight: 1.7,
-                fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                margin: 0,
-              }}
-            >
-              Everything you need to know about gardening on the Front Range — frost dates,
-              what grows, what doesn&apos;t, and why raised beds change everything.
-            </p>
-            <div>
-              <Link href="/zone-5-denver-gardening-guide" className="btn-green">
-                Start Here →
+            <div className="fn-hero-actions">
+              <Link href="/zone-5-denver-gardening-guide" className="fn-btn fn-btn--green">
+                Start with the Zone 5 Guide
+                <Arrow />
+              </Link>
+              <Link href="#tracks" className="fn-btn fn-btn--ghost-light">
+                Browse the archive
               </Link>
             </div>
+            <p className="fn-hero-fine">No sponsors. No gimmicks. Just what works at 5,400 feet.</p>
+          </div>
+
+          <div className="fn-hero-badge">
+            <Image
+              src="/tugn-logo-transparent.png"
+              alt="The Urban Gardening Neighbor badge"
+              width={340}
+              height={340}
+              priority
+            />
           </div>
         </div>
       </section>
 
-      {/* ── SERIES CARDS ── */}
-      <section
-        style={{
-          background: '#111827',
-          padding: '5rem 0',
-          borderTop: '1px solid rgba(255,255,255,0.08)',
-        }}
-      >
-        <div className="container">
-          {/* Eyebrow */}
-          <p
-            style={{
-              color: '#4A8C2A',
-              fontSize: '11px',
-              letterSpacing: '3px',
-              textTransform: 'uppercase',
-              fontFamily: 'var(--font-inter, Inter, sans-serif)',
-              textAlign: 'center',
-              marginBottom: '0.75rem',
-              fontWeight: 600,
-            }}
-          >
-            What We Grow Here
-          </p>
+      {/* ── STATS ── */}
+      <StatsBar articleCount={articleCount || undefined} />
 
-          <h2
-            style={{
-              textAlign: 'center',
-              fontSize: 'clamp(1.6rem, 3vw, 2rem)',
-              color: '#E8DFC8',
-              marginBottom: '3rem',
-              fontFamily: 'var(--font-roboto-slab, serif)',
-            }}
-          >
-            Where do you want to start?
-          </h2>
+      {/* ── ZONE 5 NOW + START HERE ── */}
+      <section aria-label="Zone 5 right now">
+        <div className="fn-container fn-now-grid">
+          <article className="fn-card fn-now">
+            <div className="fn-now-head">
+              <span className="fn-eyebrow">Zone 5 right now</span>
+              {zoneNow.label && <span className="fn-now-date">{zoneNow.label}</span>}
+            </div>
+            <h2>{zoneNow.headline}</h2>
+            <p>{zoneNow.body}</p>
+            <div className="fn-now-actions">
+              <Link href={zoneNow.ctaUrl} className="fn-arrow-link">
+                {zoneNow.ctaText}
+                <Arrow />
+              </Link>
+              {zoneNow.secondaryText && zoneNow.secondaryUrl && (
+                <Link href={zoneNow.secondaryUrl} style={{ fontWeight: 600, color: 'var(--fn-ink-muted)' }}>
+                  {zoneNow.secondaryText}
+                </Link>
+              )}
+            </div>
+          </article>
 
-          <div className="series-grid">
-            {seriesCards.map((card) => (
-              <div
-                key={card.lane}
-                style={{
-                  background: '#1a2535',
-                  border: '1px solid rgba(74,140,42,0.2)',
-                  borderTop: `3px solid ${card.borderColor}`,
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
+          <article className="fn-start">
+            <span className="fn-eyebrow fn-eyebrow--light">New to the channel?</span>
+            <h2>Start with the Zone 5 Denver Guide</h2>
+            <p>
+              Frost dates, what grows, what doesn’t, and why raised beds change everything on the Front
+              Range. Read it once and the rest of the site makes sense.
+            </p>
+            <div className="fn-start-cta">
+              <Link href="/zone-5-denver-gardening-guide" className="fn-btn fn-btn--green">
+                Read the guide
+                <Arrow />
+              </Link>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      {/* ── PILLARS ── */}
+      <section id="tracks" className="fn-section" aria-label="Where to start">
+        <div className="fn-container">
+          <div className="fn-section-head">
+            <div>
+              <span className="fn-eyebrow">What we grow here</span>
+              <h2>Where do you want to start?</h2>
+            </div>
+            <p className="fn-section-lede">
+              Four tracks. Each one is a complete transformation, start to finish. Pick the one that
+              matches what’s happening in your beds.
+            </p>
+          </div>
+
+          <div className="fn-pillars">
+            {pillars.map((p) => (
+              <article
+                key={p.lane}
+                className="fn-card fn-pillar"
+                style={{ ['--pillar' as string]: p.color, ['--pillar-text' as string]: p.textColor }}
               >
-                {/* Card image — 16:9 */}
-                <div style={{ position: 'relative', aspectRatio: '16 / 9', overflow: 'hidden' }}>
+                <div className="fn-pillar-media">
                   <Image
-                    src={card.image}
-                    alt={card.imageAlt}
-                    width={800}
-                    height={450}
-                    priority
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                  />
-                  {/* Subtle dark overlay for text readability */}
-                  <div
-                    style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.22)' }}
-                    aria-hidden="true"
+                    src={p.image}
+                    alt={p.imageAlt}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 25vw"
+                    style={{ objectFit: 'cover' }}
                   />
                 </div>
-
-                {/* Card text */}
-                <div
-                  style={{
-                    padding: '1.75rem',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.85rem',
-                    flex: 1,
-                  }}
-                >
-                  <p
-                    style={{
-                      color: card.accentColor,
-                      fontSize: '10px',
-                      letterSpacing: '3px',
-                      textTransform: 'uppercase',
-                      fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                      fontWeight: 700,
-                      margin: 0,
-                    }}
-                  >
-                    {card.lane}
-                  </p>
-                  <h3
-                    style={{
-                      fontSize: '1.35rem',
-                      color: '#E8DFC8',
-                      margin: 0,
-                      fontFamily: 'var(--font-roboto-slab, serif)',
-                      fontWeight: 700,
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    {card.heading}
-                  </h3>
-                  <p
-                    style={{
-                      fontSize: '0.95rem',
-                      color: 'rgba(232,223,200,0.65)',
-                      lineHeight: 1.65,
-                      margin: 0,
-                      flex: 1,
-                      fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                    }}
-                  >
-                    {card.body}
-                  </p>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.25rem' }}>
-                    <Link
-                      href={card.href}
-                      style={{
-                        color: card.accentColor,
-                        fontSize: '0.9rem',
-                        fontWeight: 600,
-                        fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                      }}
-                    >
-                      {card.cta}
-                    </Link>
-                    {card.secondaryCta && card.secondaryHref && (
-                      <Link
-                        href={card.secondaryHref}
-                        style={{
-                          color: 'rgba(232,223,200,0.45)',
-                          fontSize: '0.8rem',
-                          fontWeight: 400,
-                          fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                          textDecoration: 'underline',
-                          textDecorationColor: 'rgba(232,223,200,0.2)',
-                        }}
-                      >
-                        {card.secondaryCta}
-                      </Link>
-                    )}
-                  </div>
+                <div className="fn-pillar-body">
+                  <span className="fn-pillar-lane">{p.lane}</span>
+                  <h3>{p.heading}</h3>
+                  <p>{p.body}</p>
+                  <Link href={p.href} className="fn-arrow-link">
+                    {p.cta}
+                    <Arrow />
+                  </Link>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── MERCH FEATURE ── */}
-      <section
-        style={{
-          background: '#1a2535',
-          borderTop: '1px solid rgba(232,223,200,0.06)',
-          borderBottom: '1px solid rgba(232,223,200,0.06)',
-          padding: '5rem 0',
-        }}
-      >
-        <div className="container">
-          <div className="merch-layout">
-            {/* Text block */}
-            <div style={{ maxWidth: '520px' }}>
-              <p
-                style={{
-                  color: '#4A8C2A',
-                  fontSize: '11px',
-                  letterSpacing: '3px',
-                  textTransform: 'uppercase',
-                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                  fontWeight: 600,
-                  marginBottom: '0.75rem',
-                }}
-              >
-                TUGN Merch
-              </p>
-              <h2
-                style={{
-                  fontSize: 'clamp(1.5rem, 3vw, 2rem)',
-                  color: '#E8DFC8',
-                  marginBottom: '1rem',
-                  fontFamily: 'var(--font-roboto-slab, serif)',
-                }}
-              >
-                Gear and merch from the garden.
-              </h2>
-              <p
-                style={{
-                  fontSize: '1rem',
-                  color: 'rgba(232,223,200,0.65)',
-                  lineHeight: 1.7,
-                  marginBottom: '1.25rem',
-                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                }}
-              >
-                Stuff I&apos;d actually use or wear. Garden gear, TUGN characters, and
-                print-on-demand products.
-              </p>
-              <p
-                style={{
-                  color: 'rgba(232,223,200,0.4)',
-                  fontSize: '10px',
-                  letterSpacing: '3px',
-                  textTransform: 'uppercase',
-                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                  fontWeight: 600,
-                  marginBottom: '1rem',
-                }}
-              >
-                Built. Not bought.
-              </p>
-              <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-                <a
-                  href="https://the-urban-gardening-neighbor-shop.myshopify.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-green"
-                >
-                  Visit the Shop
-                </a>
-                <Link href="/gear" className="btn-outline-green">
-                  Gear I Use
-                </Link>
-              </div>
-            </div>
-
-            {/* Placeholder artwork */}
-            <div
-              className="character-placeholder"
-              style={{
-                width: '200px',
-                height: '200px',
-                flexShrink: 0,
-                border: '1px dashed rgba(232,223,200,0.2)',
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textAlign: 'center',
-                padding: '1.5rem',
-                margin: 'auto',
-              }}
-            >
-              <p
-                style={{
-                  color: 'rgba(232,223,200,0.35)',
-                  fontSize: '0.82rem',
-                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                  lineHeight: 1.6,
-                }}
-              >
-                Character artwork
-                <br />
-                coming soon
-              </p>
-            </div>
+      {/* ── NEWSLETTER ── */}
+      <section className="fn-newsletter" aria-label="Newsletter">
+        <div className="fn-container fn-newsletter-inner">
+          <div className="fn-newsletter-copy">
+            <span className="fn-eyebrow">The Neighbor’s Notes</span>
+            <h2>One email per season. What to do in Zone 5 right now.</h2>
+            <p>
+              Frost dates, planting windows, and the one task that matters this month. Comes with the
+              Zone 5 planting calendar. No daily drip, no upsells.
+            </p>
           </div>
+          <NewsletterForm />
         </div>
       </section>
 
-      {/* ── LATEST FROM THE CHANNEL ── */}
-      <section
-        style={{
-          background: '#111827',
-          padding: '5rem 0',
-          borderTop: '1px solid rgba(255,255,255,0.08)',
-        }}
-      >
-        <div className="container">
-          <p
-            style={{
-              color: '#4A8C2A',
-              fontSize: '11px',
-              letterSpacing: '3px',
-              textTransform: 'uppercase',
-              fontFamily: 'var(--font-inter, Inter, sans-serif)',
-              textAlign: 'center',
-              marginBottom: '0.75rem',
-              fontWeight: 600,
-            }}
-          >
-            Latest from the Channel
-          </p>
-          <h2
-            style={{
-              textAlign: 'center',
-              fontSize: 'clamp(1.4rem, 3vw, 1.9rem)',
-              color: '#E8DFC8',
-              marginBottom: '2.5rem',
-              fontFamily: 'var(--font-roboto-slab, serif)',
-            }}
-          >
-            What&apos;s New
-          </h2>
+      {/* ── RECENT EPISODES ── */}
+      <section className="fn-section" aria-label="Recent episodes" style={{ paddingTop: '4.5rem' }}>
+        <div className="fn-container">
+          <div className="fn-section-head">
+            <div>
+              <span className="fn-eyebrow">From the channel</span>
+              <h2>Recent episodes</h2>
+            </div>
+            <div className="fn-section-links">
+              <a href={YT_URL} target="_blank" rel="noopener noreferrer" className="fn-arrow-link">
+                All videos <Arrow />
+              </a>
+              <Link href="/articles" className="fn-arrow-link">
+                All {articleCount || ''} articles <Arrow />
+              </Link>
+            </div>
+          </div>
+
           {latestVideos.length > 0 ? (
-            <div className="series-grid">
-              {latestVideos.map((video) => (
-                <VideoCard key={video.videoId} {...video} />
-              ))}
+            <div className="fn-episodes">
+              {latestVideos.map((v) => {
+                const lane = laneFor(v.title)
+                return (
+                  <a
+                    key={v.videoId}
+                    href={`https://www.youtube.com/watch?v=${v.videoId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="fn-card fn-episode"
+                  >
+                    <div className="fn-episode-media">
+                      <Image
+                        src={v.thumbnail}
+                        alt=""
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        style={{ objectFit: 'cover' }}
+                      />
+                      <span
+                        style={{
+                          position: 'absolute',
+                          top: 12,
+                          left: 12,
+                          fontSize: 11,
+                          fontWeight: 700,
+                          letterSpacing: 2,
+                          textTransform: 'uppercase',
+                          color: '#fff',
+                          background: lane.color,
+                          padding: '5px 9px',
+                          borderRadius: 4,
+                        }}
+                      >
+                        {lane.label}
+                      </span>
+                      <div className="fn-episode-play" aria-hidden="true">
+                        <span>
+                          <svg width="22" height="22" viewBox="0 0 24 24" fill="#1b2129">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        </span>
+                      </div>
+                    </div>
+                    <div className="fn-episode-body">
+                      <h3>{v.title}</h3>
+                      <span className="fn-episode-meta">
+                        {new Date(v.publishedAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })}
+                      </span>
+                    </div>
+                  </a>
+                )
+              })}
             </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '3rem 0' }}>
-              <p
-                style={{
-                  color: 'rgba(232,223,200,0.45)',
-                  fontSize: '0.95rem',
-                  fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                  marginBottom: '1.5rem',
-                }}
-              >
-                New videos dropping soon.
+            <div className="fn-card" style={{ padding: '2.5rem', textAlign: 'center' }}>
+              <p style={{ color: 'var(--fn-ink-muted)', marginBottom: '1.25rem' }}>
+                New episodes land on YouTube first.
               </p>
-              <a
-                href="https://youtube.com/@theurbangardeningneighbor"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-green"
-              >
-                Subscribe on YouTube
+              <a href={YT_URL} target="_blank" rel="noopener noreferrer" className="fn-btn fn-btn--green">
+                Watch on YouTube
               </a>
             </div>
           )}
         </div>
       </section>
-    </>
+
+      {/* ── ABOUT STRIP ── */}
+      <section className="fn-about" aria-label="About the neighbor">
+        <div className="fn-container fn-about-inner">
+          <div className="fn-about-media">
+            <Image
+              src="/garden-wide-full.webp"
+              alt="The TUGN raised-bed garden in Denver"
+              fill
+              sizes="(max-width: 768px) 100vw, 380px"
+              style={{ objectFit: 'cover', objectPosition: 'center 40%' }}
+            />
+          </div>
+          <div className="fn-about-copy">
+            <span className="fn-eyebrow">Your neighbor</span>
+            <h2>I spent thirty years building systems that couldn’t fail. Then I tried to grow a tomato.</h2>
+            <p>
+              Everything here comes from my own raised beds in the Denver metro, Zone 5b, 5,400 feet. I
+              test it, I break it, I show you what actually held up. This is the mentorship I wish I’d
+              had when I started.
+            </p>
+            <Link href="/about" className="fn-arrow-link" style={{ marginTop: 4 }}>
+              Meet the neighbor
+              <Arrow />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── MERCH ── */}
+      <section aria-label="Gear and merch">
+        <div className="fn-container fn-merch-inner">
+          <div className="fn-merch-copy">
+            <span className="fn-eyebrow">TUGN merch</span>
+            <h2>Gear and merch from the garden.</h2>
+            <p>
+              Stuff I’d actually use or wear. Garden gear, Gus, and print-on-demand products. Built.
+              Not bought.
+            </p>
+            <div className="fn-merch-actions">
+              <a
+                href="https://the-urban-gardening-neighbor-shop.myshopify.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fn-btn fn-btn--ink"
+              >
+                Visit the shop
+              </a>
+              <Link href="/gear" className="fn-btn fn-btn--ghost-dark">
+                Gear I use
+              </Link>
+            </div>
+          </div>
+          <div className="fn-merch-tiles">
+            <div className="fn-tile fn-tile--red">
+              <Image src="/tugn-logo-transparent.png" alt="TUGN badge" width={300} height={300} />
+              <span className="fn-tile-label">The badge</span>
+            </div>
+            <div className="fn-tile fn-tile--photo">
+              <Image
+                src="/garden-wide-full.webp"
+                alt="Cedar raised beds in the TUGN garden"
+                fill
+                sizes="(max-width: 768px) 50vw, 220px"
+                style={{ objectFit: 'cover', objectPosition: 'left center' }}
+              />
+              <span className="fn-tile-label">From the beds</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   )
 }

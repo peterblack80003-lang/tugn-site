@@ -1,19 +1,22 @@
 import type { Metadata } from 'next'
-import { Roboto_Slab, Inter } from 'next/font/google'
+import { Roboto_Slab, Source_Sans_3 } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
 const robotoSlab = Roboto_Slab({
   subsets: ['latin'],
-  weight: ['700', '900'],
+  weight: ['700', '800', '900'],
   variable: '--font-roboto-slab',
   display: 'swap',
 })
 
-const inter = Inter({
+// Body face for the Field Notebook direction. Kept on the --font-inter
+// variable so every existing page picks it up without edits.
+const sourceSans = Source_Sans_3({
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
   variable: '--font-inter',
   display: 'swap',
 })
@@ -46,7 +49,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${robotoSlab.variable} ${inter.variable}`}
+      className={`${robotoSlab.variable} ${sourceSans.variable}`}
     >
       <body
         style={{

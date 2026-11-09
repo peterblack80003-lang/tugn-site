@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react'
 
-interface Stat {
-  number: string
-  label: string
+type Props = {
+  /** Server-rendered fallback so the number never flashes from a placeholder. */
+  initialVideoCount?: number
+  articleCount?: number
 }
 
-export default function StatsBar() {
-  const [videoCount, setVideoCount] = useState<number>(50)
+export default function StatsBar({ initialVideoCount = 50, articleCount }: Props) {
+  const [videoCount, setVideoCount] = useState<number>(initialVideoCount)
 
   useEffect(() => {
     fetch('/api/youtube')
@@ -19,62 +20,20 @@ export default function StatsBar() {
       .catch(() => {})
   }, [])
 
-  const stats: Stat[] = [
-    { number: String(videoCount), label: 'VIDEOS' },
-    { number: '3', label: 'SERIES' },
-    { number: '5b', label: 'ZONE TESTED' },
-    { number: '0', label: 'GIMMICKS' },
+  const stats: Array<{ number: string; label: string }> = [
+    { number: String(videoCount), label: 'Videos' },
+    articleCount ? { number: String(articleCount), label: 'Articles' } : { number: '4', label: 'Tracks' },
+    { number: '5b', label: 'Zone tested' },
+    { number: '0', label: 'Gimmicks' },
   ]
 
   return (
-    <section
-      style={{
-        background: '#4A8C2A',
-        borderTop: '1px solid rgba(255,255,255,0.12)',
-        borderBottom: '1px solid rgba(255,255,255,0.12)',
-      }}
-    >
-      <div className="stats-grid">
-        {stats.map((stat, i) => (
-          <div key={stat.label} className="stat-item" style={{ textAlign: 'center' }}>
-            {i > 0 && (
-              <span
-                className="stat-divider"
-                aria-hidden="true"
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  top: '20%',
-                  height: '60%',
-                  width: '1px',
-                  background: 'rgba(255,255,255,0.2)',
-                }}
-              />
-            )}
-            <div
-              style={{
-                color: '#fff',
-                fontSize: '2.25rem',
-                fontFamily: 'var(--font-roboto-slab, serif)',
-                fontWeight: 900,
-                lineHeight: 1.1,
-                marginBottom: '0.35rem',
-              }}
-            >
-              {stat.number}
-            </div>
-            <div
-              style={{
-                color: 'rgba(255,255,255,0.82)',
-                fontSize: '11px',
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-                fontFamily: 'var(--font-inter, Inter, sans-serif)',
-                fontWeight: 600,
-              }}
-            >
-              {stat.label}
-            </div>
+    <section className="fn-stats" aria-label="Channel at a glance">
+      <div className="fn-container fn-stats-grid">
+        {stats.map((stat) => (
+          <div key={stat.label} className="fn-stat">
+            <span className="fn-stat-num">{stat.number}</span>
+            <span className="fn-stat-label">{stat.label}</span>
           </div>
         ))}
       </div>
